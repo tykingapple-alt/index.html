@@ -1,0 +1,68 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Keivos Shadowing Overview</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: brand bar, one grid of surface cards, one card of notes. */
+:root{
+  --bg:#F4F7F8; --surface:#FFFFFF; --surface-2:#EBF0F2; --fg:#172229; --muted:#5A6B74; --line:#D5DDE2;
+  --accent:#0E7470; --accent-soft:#DBEEEB; --warn:#9A6207; --warn-soft:#F7E8CB;
+  --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif; --body:'IBM Plex Sans',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --r:8px; --shadow:0 1px 2px rgba(23,34,41,.06),0 4px 14px rgba(23,34,41,.05);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --bg:#0F161A; --surface:#172229; --surface-2:#1F2C34; --fg:#E7EDF0; --muted:#9AAAB3; --line:#2B3A43; --accent:#42B5AE; --accent-soft:#163C39; --warn:#E2AB4A; --warn-soft:#3A2E14; --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25); color-scheme:dark } }
+:root[data-theme="dark"]{ --bg:#0F161A; --surface:#172229; --surface-2:#1F2C34; --fg:#E7EDF0; --muted:#9AAAB3; --line:#2B3A43; --accent:#42B5AE; --accent-soft:#163C39; --warn:#E2AB4A; --warn-soft:#3A2E14; --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25); color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;margin:0}
+.wrap{max-width:1000px;margin:0 auto;padding-block:16px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:26px;font-weight:600} h2{font-size:18px;font-weight:600} h3{font-size:16px;font-weight:600}
+p{margin:0}
+.brand{display:flex;align-items:baseline;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.brand .k{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.02em}
+.brand .sep{color:var(--line)}
+.brand .sub{font-size:13px;color:var(--muted)}
+.lead{margin-top:18px;max-width:62ch;color:var(--muted)}
+.hub{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin-top:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:8px;min-width:0}
+a.card{text-decoration:none;color:var(--fg)}
+a.card:hover{border-color:var(--accent)}
+.who{font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.card p{font-size:13.5px;color:var(--muted)}
+.card .go{margin-top:auto;font-weight:600;color:var(--accent);font-size:13.5px}
+.notes{margin-top:18px;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.notes ol,.notes ul{margin:0;padding-left:18px;font-size:14px;display:flex;flex-direction:column;gap:4px}
+code{font-family:var(--mono);font-size:13px;background:var(--surface-2);padding:1px 6px;border-radius:4px}
+.chip{display:inline-flex;align-items:center;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--warn-soft);color:var(--warn);width:fit-content}
+</style>
+<div class="wrap">
+  <header class="brand"><span class="k">KEIVOS</span><span class="sep">/</span><h1>Shadowing</h1><span class="sub">Mock-ups for the v1 build</span></header>
+  <p class="lead">Five pages, one per surface in the real product. Each is a working mock-up with its own sample data, pinned to Oct 25, 2026. State does not carry between pages. Buttons that would download or send show a message instead.</p>
+  <div class="hub">
+    <a class="card" href="https://claude.ai/artifact/FX1SMuxQGW8U3cevji2t8n"><span class="who">Students</span><h3>Student app</h3><p>Profile, email code, activation code or access request, find and filter physicians, book or request, waitlist, request more visits, cancel (late cancellations included), log hours, edit reflections, history and export, account and rules.</p><span class="go">Open →</span></a>
+    <a class="card" href="https://claude.ai/artifact/5JAkSAktcWjj1dF4tGy7gi"><span class="who">Physicians</span><h3>Physician portal</h3><p>One Keivos account per physician, signed in by emailed code or from an email link. Overview with action and visit cards, Schedule with the calendar (availability shared or per organization), visit cards and collapsed history, My Organizations with per-organization settings and pause, My Profile with collapsed sections for practice locations, email preferences and activity.</p><span class="go">Open →</span></a>
+    <a class="card" href="https://claude.ai/artifact/VmPzhdGRRZmdsoKgoiuTjn"><span class="who">Physicians · invitation link</span><h3>Join Keivos Shadowing</h3><p>Guided onboarding from an organization's invitation link: use an existing profile or create one (verify identity, professional profile, connect, practice location, shadowing preferences, communication, availability), with Skip for now on everything after the profile and a setup checklist at the end. A scheduling coordinator can start it for a physician, who confirms by email. Physicians can also sign up without an invitation.</p><span class="go">Open →</span></a>
+    <a class="card" href="https://claude.ai/artifact/YUptyubWiznxUpSJHvwxMP"><span class="who">Scheduling coordinators</span><h3>Coordinator portal</h3><p>One free account for office staff, authorized per physician and location. Overview and Visits &amp; Requests across their physicians, Schedule with other locations shown only as Busy, Availability at their locations, Practice locations, Account with authorizations.</p><span class="go">Open →</span></a>
+    <a class="card" href="https://claude.ai/artifact/LxTjPKTviw8vgeQnChdtZB"><span class="who">Admin</span><h3>Admin dashboard</h3><p>Overview and action items (intakes, access requests, cap requests, attendance, reinstatement), physicians with a Recruitment view (invitation link and resources) and a tabbed read-only profile view, bookings, students with eligibility, analytics and term summary, settings in six collapsed sections including leadership permissions, organization profile and subscription.</p><span class="go">Open →</span></a>
+    <a class="card" href="https://claude.ai/artifact/7n5NqZEscDW2xw5dj3o45K"><span class="who">Email</span><h3>Emails and confirmation pages</h3><p>Every message the platform sends, to physicians, students and admins, rendered as received. Each button opens the one-click confirmation page it links to.</p><span class="go">Open →</span></a>
+  </div>
+  <div class="notes">
+    <section class="card"><h2>Sample data</h2><ul>
+      <li>Student: Avery Jensen, not yet activated. Activation code <code>F26-SHDW-4K2</code>.</li>
+      <li>Physician portal: Dr. Elena Marsh, Family Medicine, two practice locations, connected to two organizations (approve-each on for BYU-Idaho), one active request with a second student in line, and one unanswered attendance question. Her profile was set up by her coordinator.</li>
+      <li>Coordinator portal: Teresa Oakes, authorized for Dr. Marsh at Upper Valley Family Medicine (may approve requests) and Dr. Ahn at Rexburg Dermatology (may not). Dr. Marsh's hospital clinic shows only as Busy.</li>
+      <li>Student: Avery has a confirmed Nov 12 visit, so Dr. Raman's Nov 12 date shows as a conflict. Dr. Marsh's Dec 8 date has two students in line.</li>
+      <li>The setup checklist appears in the physician portal only while a profile is missing a location or shadowing preferences; Dr. Marsh's is complete, so see it on the onboarding done screen after skipping a step.</li>
+      <li>Admin: signed in as the faculty sponsor, a lead administrator. One intake awaiting review, one student access request, one cap request, one blocked student, one invited administrator.</li>
+      <li>Dr. Ahn has no bookable dates, so the student app shows the waitlist.</li>
+    </ul></section>
+    <section class="card"><h2>What the mock-ups stand in for</h2><ul>
+      <li>Exports, PDF downloads, outreach resources, the invitation link copy, "Recommend Keivos to an organization" and "Open my portal" show a message. Any six digits pass as an emailed code. The job that declines unanswered requests at visit start does not run in the mock-ups.</li>
+      <li>Photo upload is real in the browser (file picker, preview) but not saved anywhere.</li>
+      <li>Email buttons open the confirmation pages inside the Emails page; in production they are tokened links to the platform.</li>
+      <li>The <code>i</code> markers are the in-product help text. Hover or tap.</li>
+    </ul></section>
+  </div>
+</div>
+
+</body></html>
