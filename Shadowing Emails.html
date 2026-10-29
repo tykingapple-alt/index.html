@@ -1,0 +1,1055 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Shadowing Emails</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: app shell. Brand bar, tabs, content. Stacks to one column on phones. */
+:root{
+  --bg:#F4F7F8; --surface:#FFFFFF; --surface-2:#EBF0F2; --fg:#172229; --muted:#5A6B74; --line:#D5DDE2;
+  --accent:#0E7470; --accent-fg:#FFFFFF; --accent-soft:#DBEEEB;
+  --warn:#9A6207; --warn-soft:#F7E8CB; --bad:#AE3838; --bad-soft:#F5DDDD; --good:#2A7A4A; --good-soft:#DAEFE1;
+  --display:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --body:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:8px; --shadow:0 1px 2px rgba(23,34,41,.06),0 4px 14px rgba(23,34,41,.05);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#0F161A; --surface:#172229; --surface-2:#1F2C34; --fg:#E7EDF0; --muted:#9AAAB3; --line:#2B3A43;
+  --accent:#42B5AE; --accent-fg:#06211F; --accent-soft:#163C39;
+  --warn:#E2AB4A; --warn-soft:#3A2E14; --bad:#E27A7A; --bad-soft:#3D2020; --good:#64C48B; --good-soft:#173B27;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25); color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0F161A; --surface:#172229; --surface-2:#1F2C34; --fg:#E7EDF0; --muted:#9AAAB3; --line:#2B3A43;
+  --accent:#42B5AE; --accent-fg:#06211F; --accent-soft:#163C39;
+  --warn:#E2AB4A; --warn-soft:#3A2E14; --bad:#E27A7A; --bad-soft:#3D2020; --good:#64C48B; --good-soft:#173B27;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25); color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5;margin:0}
+.wrap{max-width:1140px;margin:0 auto;padding-block:16px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:26px;font-weight:600}
+h2{font-size:20px;font-weight:600}
+h3{font-size:16px;font-weight:600}
+h4{font-size:12.5px;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+p{margin:0}
+a{color:var(--accent)}
+.muted{color:var(--muted)}
+.fine{font-size:13px;color:var(--muted)}
+.mono{font-family:var(--mono);font-size:13px}
+.num{font-variant-numeric:tabular-nums}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.brand{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.brand .name{display:flex;align-items:baseline;gap:10px}
+.brand .name .k{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.02em}
+.brand .name .sep{color:var(--line)}
+.brand .name .sub{font-size:13px;color:var(--muted)}
+.brand .signed{font-size:13px;color:var(--muted)}
+
+.subnav{display:flex;gap:4px;flex-wrap:wrap;margin-top:14px;border-bottom:1px solid var(--line)}
+.subnav button{border:0;background:transparent;color:var(--muted);padding:8px 12px;font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px}
+.subnav button.on{color:var(--fg);border-bottom-color:var(--accent)}
+.subnav button .pill{display:inline-block;min-width:18px;padding:0 5px;border-radius:999px;background:var(--warn-soft);color:var(--warn);font-size:11px;font-weight:700;margin-left:4px;text-align:center}
+
+.content{display:flex;flex-direction:column;gap:16px;margin-top:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.card.soft{background:var(--surface-2);border-color:transparent}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.stack{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.grid2{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.tiles{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.tile .v{font-family:var(--display);font-size:28px;font-weight:600;line-height:1}
+.tile .l{font-size:12.5px;color:var(--muted);margin-top:6px}
+.tile.warn{border-color:var(--warn)}
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;font-size:14px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;min-width:0}
+.item{padding:10px 0;border-top:1px solid var(--line)}
+.item:first-of-type{border-top:0;padding-top:0}
+
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--fg);padding:8px 14px;border-radius:7px;font-weight:600;font-size:14px}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.sm{padding:5px 10px;font-size:13px}
+.btn.danger{color:var(--bad);border-color:var(--bad)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.link{border:0;background:none;color:var(--accent);padding:0;font-weight:600}
+.link.sm{font-size:13px;white-space:nowrap}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.chip.good{background:var(--good-soft);color:var(--good)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}
+.chip.acc{background:var(--accent-soft);color:var(--accent)}
+.chip .dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.backlink{border:0;background:none;color:var(--accent);font-weight:600;padding:0;display:inline-flex;gap:4px;align-items:center}
+
+/* Info tooltips */
+.info{display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;background:var(--surface-2);color:var(--muted);font-size:10.5px;font-weight:700;font-family:var(--mono);cursor:help;vertical-align:middle;margin-left:5px;border:1px solid var(--line);user-select:none}
+.info:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+#tip{position:fixed;z-index:40;max-width:260px;background:var(--fg);color:var(--bg);font-size:12.5px;line-height:1.4;padding:8px 10px;border-radius:6px;box-shadow:var(--shadow);pointer-events:none}
+#tip[hidden]{display:none}
+
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.checks li{display:grid;grid-template-columns:24px 1fr;gap:10px;align-items:start}
+.checks .mark{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;background:var(--surface-2);color:var(--muted);border:1px solid var(--line)}
+.checks .ok .mark{background:var(--good-soft);color:var(--good);border-color:transparent}
+.checks .t{font-weight:600}
+.checks .d{font-size:13px;color:var(--muted)}
+
+.doc{display:flex;flex-direction:column;gap:10px}
+.doc .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.doc .spec{color:var(--accent);font-weight:600;font-size:13px}
+.doc .site{font-size:13.5px;color:var(--muted)}
+.doc .rule{font-size:13.5px}
+.doc .reqs{display:flex;gap:6px;flex-wrap:wrap}
+.doc .foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto}
+.doc .next{font-size:13px}
+.avatar{width:44px;height:44px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:15px;flex:none;overflow:hidden;position:relative}
+.avatar.lg{width:72px;height:72px;font-size:24px}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar.edit{cursor:pointer;border:0;padding:0}
+.avatar.edit .ov{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.5);color:#fff;font-size:11px;font-weight:600;font-family:var(--body);opacity:0;transition:opacity .15s;text-align:center;line-height:1.2}
+.avatar.edit:hover .ov,.avatar.edit:focus-visible .ov{opacity:1}
+
+.months{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.slots{display:flex;flex-direction:column;gap:6px}
+.slot{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 12px;border:1px solid var(--line);border-radius:7px;background:var(--surface);text-align:left;width:100%}
+.slot:hover:not(:disabled){border-color:var(--accent)}
+.slot:disabled{cursor:not-allowed;color:var(--muted);background:var(--surface-2)}
+.slot .d{font-weight:600}
+.slot .s{font-size:12.5px;color:var(--muted)}
+.slot .w{flex-basis:100%;font-size:12px;color:var(--muted);margin-top:-2px}
+.slot{flex-wrap:wrap}
+.eyebrow{font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+.form{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field.row{flex-direction:row;gap:10px}
+.field label{font-size:12.5px;font-weight:600;color:var(--muted)}
+.field input,.field select,.field textarea{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg);width:100%}
+.field input[type=checkbox],.field input[type=radio],.filters input[type=checkbox]{width:auto;min-width:0;padding:0;flex:0 0 auto}
+.field textarea{min-height:72px;resize:vertical}
+.field.full,.form .full{grid-column:1/-1}
+fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+legend{font-family:var(--display);font-weight:600;font-size:15px;margin-bottom:6px;padding:0}
+.opt{display:flex;gap:8px;align-items:flex-start;font-size:14px}
+.opt input{margin-top:3px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;flex-wrap:wrap}
+.seg button{border:0;background:var(--surface);color:var(--muted);padding:7px 12px;font-weight:600;font-size:13px}
+.seg button.on{background:var(--accent-soft);color:var(--accent)}
+.upload{border:1px dashed var(--line);border-radius:7px;padding:14px;text-align:center;color:var(--muted);font-size:13px}
+.codebox{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.codebox code{font-family:var(--mono);font-size:18px;letter-spacing:.06em;padding:8px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface-2)}
+
+.tw{overflow-x:auto;margin:0 -18px;padding:0 18px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+td.wrap-ok{white-space:normal}
+tr:last-child td{border-bottom:0}
+td.heat{font-weight:600}
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{color:var(--fg)}
+th.sortable.on{color:var(--fg)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filters select,.filters input{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--fg)}
+.filters input{min-width:160px}
+.field.narrow{max-width:200px}
+.field.narrow input{width:110px}
+.settings{display:flex;flex-direction:column;gap:16px}
+.settings .card{padding:22px}
+.settings h3{margin-bottom:4px}
+
+.mail{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--surface)}
+.mail .mh{background:var(--surface-2);padding:10px 14px;font-size:13px;display:grid;gap:2px}
+.mail .mh b{font-weight:600}
+.mail .mb{padding:14px;display:flex;flex-direction:column;gap:10px;font-size:14px}
+.mail .mb .big{font-family:var(--display);font-size:17px;font-weight:600}
+.mail .mf{padding:10px 14px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.mail.done{opacity:.7}
+
+.notice{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:7px;background:var(--accent-soft);color:var(--fg);font-size:13.5px}
+.notice.warn{background:var(--warn-soft)}
+.notice.bad{background:var(--bad-soft)}
+.notice.good{background:var(--good-soft)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14px;font-weight:500;box-shadow:var(--shadow);max-width:calc(100% - 32px);z-index:20;transition:opacity .2s}
+.toast[hidden]{display:none}
+
+/* Profile */
+.pnav{display:flex;gap:4px;flex-wrap:wrap}
+.pnav a{font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;padding:4px 8px;border-radius:6px;background:var(--surface-2)}
+.phead{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.act{display:grid;grid-template-columns:max-content 1fr;gap:4px 12px;font-size:13.5px}
+.act .w{color:var(--muted);white-space:nowrap}
+
+/* Calendar */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal .dow{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:center;padding:4px 0}
+.cal .day{min-height:76px;border:1px solid var(--line);border-radius:6px;padding:4px;display:flex;flex-direction:column;gap:3px;background:var(--surface);min-width:0}
+.cal .day.off{background:var(--surface-2);border-color:transparent}
+.cal .day.today{border-color:var(--accent)}
+.cal .n{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.cal .ev{font-size:11px;line-height:1.25;padding:2px 5px;border-radius:4px;border:0;text-align:left;width:100%;background:var(--accent-soft);color:var(--accent);font-weight:600;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cal .ev.booked{background:var(--good-soft);color:var(--good)}
+.cal .ev.req{background:var(--warn-soft);color:var(--warn)}
+.cal .ev.sel{box-shadow:0 0 0 2px var(--accent)}
+@media (max-width:640px){ .cal .day{min-height:56px} .cal .ev{font-size:10px;padding:1px 3px} }
+
+.funnel{display:grid;grid-template-columns:max-content 1fr max-content;gap:6px 10px;align-items:center;font-size:13.5px}
+.funnel .bar{height:18px;background:var(--accent);border-radius:3px;opacity:.85}
+.funnel .lab{color:var(--muted)}
+.confirm{max-width:560px}
+.hub{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.hub a.card{display:flex;flex-direction:column;gap:6px;text-decoration:none;color:var(--fg)}
+.hub a.card:hover{border-color:var(--accent)}
+
+@media (max-width:640px){ h1{font-size:22px} }
+@media (prefers-reduced-motion:reduce){ .toast,.avatar.edit .ov{transition:none} }
+tr.actrow td{background:var(--surface-2);white-space:normal;padding:10px 14px}
+.actions{display:flex;flex-direction:column;gap:8px}
+.action{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 10px;background:var(--surface);border:1px solid var(--line);border-radius:7px}
+
+.menuwrap{position:relative}
+.popover{position:absolute;right:0;top:calc(100% + 8px);width:min(460px,calc(100vw - 32px));max-height:min(72vh,680px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 14px 36px rgba(0,0,0,.16);z-index:40;padding:18px;text-align:left}
+.popover .kv{font-size:13px}
+.popover .form{grid-template-columns:1fr}
+.btn.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.38);display:grid;place-items:center;z-index:100;padding:16px}
+.modal{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px 22px;width:100%;max-width:440px;box-shadow:0 18px 48px rgba(0,0,0,.22)}
+.modal h3{margin:0}
+.modal p{margin:0}
+
+.viewseg{display:flex;width:100%;max-width:520px}
+.viewseg button{flex:1;padding:8px 12px;font-weight:600}
+.avlist{display:flex;flex-direction:column;gap:10px}
+.avmonth{margin:8px 0 0;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.avcard{display:grid;grid-template-columns:150px 1fr auto;gap:14px;align-items:center;text-align:left;font:inherit;color:inherit;cursor:pointer;padding:14px 16px;width:100%}
+.avcard:hover{border-color:var(--accent);box-shadow:0 2px 10px rgba(0,0,0,.06)}
+.avcard:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.avcard .when{display:flex;flex-direction:column}
+.avcard .who{display:flex;gap:10px;align-items:center;min-width:0}
+.avcard .txt{min-width:0}
+.avcard .name{font-weight:600}
+.avcard .arrow{font-size:26px;line-height:1;color:var(--muted);padding:0 4px}
+@media (max-width:640px){.avcard{grid-template-columns:1fr auto}.avcard .who{grid-column:1/-1}.avcard .arrow{grid-row:1;grid-column:2}}
+
+.sechead{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;border:0;background:none;padding:0;margin:0;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.sechead h3{margin:0}
+.sechead .fine{margin-top:4px}
+.sechead .chev{font-size:18px;color:var(--muted);transition:transform .15s;flex:0 0 auto}
+.sechead[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.settings .card.collapsed{padding:16px 22px}
+
+/* Onboarding step indicator */
+.steps{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.steps .st{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);font-weight:600}
+.steps .st .n{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);border:1px solid var(--line);font-size:12px}
+.steps .st.on{color:var(--fg)} .steps .st.on .n{background:var(--accent);color:var(--accent-fg);border-color:var(--accent)}
+.steps .st.done .n{background:var(--good-soft);color:var(--good);border-color:transparent}
+.steps .sep{flex:1;height:1px;background:var(--line);min-width:12px}
+
+/* Visit and action cards (physician portal) */
+.vcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.vcard{display:flex;flex-direction:column;gap:8px;padding:14px 16px}
+.vcard .when{font-weight:600;font-size:15px;line-height:1.3}
+.vcard .when .fine{font-weight:400;margin-top:2px}
+.vcard .meta{font-size:12.5px;color:var(--muted);line-height:1.5}
+.vcard .foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto;flex-wrap:wrap}
+.card.collapsed{padding:16px 22px}
+
+/* Setup checklist */
+.bar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--fg);border-radius:3px}
+.checks{display:flex;flex-direction:column;gap:10px}
+.check{display:flex;align-items:flex-start;gap:10px}
+.check .dot{width:20px;height:20px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;font-size:12px;background:var(--line);color:transparent;margin-top:1px}
+.check.done .dot{background:var(--good-soft);color:var(--good);border:1px solid var(--good)}
+.check>div{flex:1}
+.check .btn{margin-left:auto}
+.credrow{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.cal .ev.other{display:block;background:repeating-linear-gradient(135deg,var(--surface-2),var(--surface-2) 4px,var(--line) 4px,var(--line) 5px);color:var(--muted);cursor:default}
+
+</style>
+<div class="wrap">
+  <header class="brand">
+    <div class="name"><span class="k">KEIVOS</span><span class="sep">/</span><h1>Shadowing</h1><span class="sub">Email templates and confirmation pages</span></div>
+    <span class="signed">Every button opens a one-click confirmation page</span>
+  </header>
+  <div class="subnav" id="subnav"></div>
+  <main class="content" id="app"></main>
+</div>
+<div class="toast" id="toast" hidden></div>
+<div id="tip" hidden></div>
+<script>
+/* ---------- fixed clock and helpers ---------- */
+const TODAY = new Date(2026, 9, 25);
+const TODAY_ISO = '2026-10-25';
+const WD = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const WDL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MOL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const iso = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const fmt = s => { const d = parse(s); return WD[d.getDay()]+' '+MO[d.getMonth()]+' '+d.getDate(); };
+const fmtY = s => fmt(s) + ', ' + parse(s).getFullYear();
+const fmtLong = s => { const d = parse(s); return WDL[d.getDay()]+', '+MOL[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear(); };
+const daysOut = s => Math.round((parse(s) - TODAY) / 86400000);
+const t12 = t => { const [h, m] = t.split(':').map(Number); const ap = h >= 12 ? 'PM' : 'AM'; const hh = ((h + 11) % 12) + 1; return hh + ':' + String(m).padStart(2,'0') + ' ' + ap; };
+const span = (a, b) => t12(a) + ' – ' + t12(b);
+const hoursBetween = (a, b) => { const [h1, m1] = a.split(':').map(Number); const [h2, m2] = b.split(':').map(Number); return (h2 * 60 + m2 - h1 * 60 - m1) / 60; };
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const initials = n => n.split(',')[0].split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+const first = n => n.split(',')[0];
+const monthKey = s => s.slice(0, 7);
+const monthName = k => MOL[Number(k.slice(5)) - 1];
+const fmtMonth = ym => ym ? MOL[Number(ym.slice(5, 7)) - 1] + ' ' + ym.slice(0, 4) : '';
+const info = text => `<span class="info" tabindex="0" role="note" aria-label="${esc(text)}" data-tip="${esc(text)}">i</span>`;
+const stamp = () => TODAY_ISO + ' ' + new Date().toTimeString().slice(0, 5);
+function cancelBy(b, hours) { const d = parse(b.date); const [h, m] = b.start.split(':').map(Number); d.setHours(h, m, 0, 0); d.setHours(d.getHours() - hours); return WD[d.getDay()] + ' ' + MO[d.getMonth()] + ' ' + d.getDate() + ', ' + t12(String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0')); }
+let seq = 100;
+const nid = p => p + (seq++);
+
+/* ---------- sample data ---------- */
+const DB = {
+  config: { org: 'BYU-Idaho Pre-Med Society', affiliation: 'Brigham Young University-Idaho', slug: 'byui-premed', intakeUrl: 'https://shadow.keivos.com/join/byui-premed', logo: '', accent: '#1f6f66',
+            programDesc: 'Pre-med undergraduates at BYU-Idaho shadow local physicians in their practices. The society screens and prepares every student before they can book; Keivos keeps the schedule and handles the paperwork reminders. How long a visit runs is up to you: the hours you add as availability are the visit.', studentPrep: ['Completed the society\'s shadowing orientation: confidentiality, professionalism and HIPAA basics', 'Signed the student agreement and the no-show policy', 'Verified as a current student with a school email'], participation: ['You set when students can come; nothing is booked without your availability', 'Students book from your open dates, or request them if you choose to approve each one', 'After each visit one email asks whether the student attended; that is the only follow-up', 'Pause or leave at any time from your portal'],
+            welcome: 'Welcome to the Pre-Med Society shadowing program. Be on time, dress the part, and thank the office on your way out.', contactEmail: 'shadowing@byui.edu', timezone: 'America/Boise',
+            enabled: true, domain: 'byui.edu', cancelHours: 72, capPerMonth: 2, waitlistPolicy: 'everyone', gradAccess: 'end', gradMonths: 6, eligRenewal: 'term', allowRequests: true,
+            code: 'F26-SHDW-4K2', codeExpires: '2027-01-04', sponsor: 'Brother Shaw', sponsorEmail: 'shawb@byui.edu',
+            plan: { name: 'Pilot', price: 'Free', since: '2026-09-15', billingEmail: 'shawb@byui.edu' },
+            terms: [{ id:'f25', name:'Fall 2025', start:'2025-09-15', end:'2025-12-18' }, { id:'w26', name:'Winter 2026', start:'2026-01-05', end:'2026-04-10' }, { id:'s26', name:'Spring 2026', start:'2026-04-20', end:'2026-07-24' }, { id:'f26', name:'Fall 2026', start:'2026-09-14', end:'2026-12-18' }, { id:'w27', name:'Winter 2027', start:'2027-01-05', end:'2027-04-09' }],
+            allowlist: [
+              { email:'shawb@byui.edu', name:'Brother Shaw', role:'lead', adviser:true, perms:[], status:'active', since:'2026-09-15', digest:'Monday', alerts:['intake','access','noshow','attendance','bounce','cap'] },
+              { email:'president@byui.edu', name:'Society president', role:'lead', adviser:false, perms:[], status:'active', since:'2026-09-15', digest:'Monday', alerts:['intake','access','noshow','cap'] },
+              { email:'shadowing@byui.edu', name:'Director of Shadowing', role:'admin', adviser:false, perms:['physicians','bookings','analytics'], status:'active', since:'2026-09-20', digest:'None', alerts:['intake','attendance','bounce'] },
+              { email:'vp.premed@byui.edu', name:'', role:'admin', adviser:false, perms:['students'], status:'invited', since:'2026-10-20', digest:'Wednesday', alerts:['access','noshow','cap'] }] },
+  physicians: [
+    { id:'marsh', first:'Elena', last:'Marsh', suffix:'', display:'', credentials:['MD', 'MPH'], specialty:'Family Medicine',
+      locations:[{ id:'marsh-main', name:'Upper Valley Family Medicine', address:'240 N 2nd E', city:'Rexburg', state:'ID', zip:'83440', meet:'Front desk; ask for the clinic manager', parking:'Patient lot, east side', dayof:'Clinic manager, 208-555-0142',  reqs:['Confidentiality agreement signed on site','Business casual, closed-toe shoes','No phone use in exam rooms'], paperwork:{ mode:'none', statement:'', links:[], files:[] }, isDefault:true },
+        { id:'marsh-mmh', name:'Madison Memorial Hospital, Family Medicine Clinic', address:'450 E Main St', city:'Rexburg', state:'ID', zip:'83440', meet:'Clinic lobby, second floor; ask for Dr. Marsh', parking:'Hospital visitor lot', dayof:'Clinic front desk, 208-555-0180', reqs:['Hospital badge issued at the volunteer office','Closed-toe shoes'], paperwork:{ mode:'files', statement:'Complete the hospital volunteer packet before your first visit at this location.', links:[], files:['MMH-Volunteer-Packet.pdf'] }, isDefault:false }],
+      prefs:{ attendanceTo:'scheduling', reminderDays:2, summary:'weekly', renewalReminders:true },
+      email:'emarsh@uvfm.example',
+      rules:[{ id:'r1', locationId:'marsh-main', weekday:2, nth:1, start:'08:00', end:'12:00', repeat:'every_2_weeks', from:'2026-09-29', lead:14, horizon:60, cap:1, blackout:[], until:'' }],
+      manual:[{ id:'m1', locationId:'marsh-mmh', date:'2026-11-21', start:'09:00', end:'12:00', lead:7, horizon:60, cap:1, org:'' }, { id:'m2', locationId:'marsh-main', date:'2026-12-05', start:'09:00', end:'12:00', lead:7, horizon:60, cap:1, org:'isu-prehealth' }], removed:[],
+      orgs:[{ org:'BYU-Idaho Pre-Med Society', slug:'byui-premed', status:'active', since:'2026-09-30', availability:'shared', years:'Any year', approveEach:true }, { org:'Idaho State University Pre-Health Society', slug:'isu-prehealth', status:'active', since:'2026-10-14', availability:'shared', years:'Juniors & seniors', approveEach:false }], status:'active', pausedUntil:null,
+      submittedBy:'Staff', submittedByName:'Teresa Oakes', submittedOn:'2026-09-30', renewed:'Fall 2026',
+      bio:'Family physician in Rexburg since 2014. I see newborns through geriatrics, do minor procedures on Tuesdays, and like students who ask questions between patients.', photo:'',
+      blocks:[],
+      activity:[
+        { at:'2026-10-19 08:12', who:'Teresa Oakes', what:'Added date Sat Nov 21, 9:00 AM – 12:00 PM' },
+        { at:'2026-10-13 17:40', who:'Dr. Marsh', what:'Confirmed attendance for Noah Pratt, Sep 29 (4.0 h)' },
+        { at:'2026-10-03 09:05', who:'Dr. Marsh', what:'Renewed schedule for Fall 2026' },
+        { at:'2026-09-30 14:22', who:'Admin', what:'Profile approved' },
+        { at:'2026-09-30 11:50', who:'Director of Shadowing', what:'Profile set up by office staff; Dr. Marsh confirmed' } ] },
+    { id:'oyelaran', first:'Samuel', last:'Oyelaran', suffix:'', display:'', credentials:['DO'], specialty:'Orthopedic Surgery',
+      locations:[{ id:'oyelaran-main', name:'Teton Orthopedics & Sports Medicine', address:'2890 Channing Way, Suite 200', city:'Idaho Falls', state:'ID', zip:'83404', meet:'Clinic entrance B; check in with the MA', parking:'Visitor garage, level 2', dayof:'Surgical scheduler, 208-555-0177', reqs:['Scrubs provided on site','Arrive 15 minutes early; no open-toe shoes'], paperwork:{ mode:'files', statement:'Submit the hospital observership packet to the volunteer office at least two weeks before your first visit. Immunization record and TB test are required.', links:[{ label:'Observership packet (PDF)', url:'#' }], files:['Observership-Packet-2026.pdf','Immunization-Form.pdf'] }, isDefault:true }],
+      prefs:{ attendanceTo:'scheduling', reminderDays:7, summary:'every_2_weeks', renewalReminders:true },
+      email:'soyelaran@tetonortho.example',
+      rules:[{ id:'r2', locationId:'oyelaran-main', weekday:4, nth:2, start:'07:30', end:'12:00', repeat:'monthly', from:'', lead:21, horizon:90, cap:1, blackout:[], until:'' }], manual:[], removed:[],
+      status:'active', orgs:[{ org:'BYU-Idaho Pre-Med Society', slug:'byui-premed', status:'active', since:'2026-10-08', availability:'shared', years:'Juniors & seniors', approveEach:false }], pausedUntil:null, submittedBy:'Physician', submittedByName:'', submittedOn:'2026-10-08', renewed:'Fall 2026',
+      bio:'', photo:'', blocks:[], activity:[{ at:'2026-10-09 10:02', who:'Admin', what:'Profile approved' },{ at:'2026-10-08 20:15', who:'Dr. Oyelaran', what:'Created profile and connected to BYU-Idaho Pre-Med Society' }] },
+    { id:'raman', first:'Priya', last:'Raman', suffix:'', display:'', credentials:['MD'], specialty:'Emergency Medicine',
+      locations:[{ id:'raman-main', name:'Snake River Regional Medical Center', address:'3100 Channing Way', city:'Idaho Falls', state:'ID', zip:'83404', meet:'ED staff entrance; the volunteer office issues a badge', parking:'Staff lot C with the day pass', dayof:'Volunteer office, 208-555-0190', reqs:['Scrubs provided; no open-toe shoes','Stay with the physician at all times'], paperwork:{ mode:'links', statement:'Complete the volunteer office background check and upload your immunization record through the hospital portal.', links:[{ label:'SRRMC volunteer portal', url:'#' }], files:[] }, isDefault:true }],
+      prefs:{ attendanceTo:'physician', reminderDays:1, summary:'monthly', renewalReminders:true },
+      email:'praman@srrmc.example',
+      rules:[{ id:'r3', locationId:'raman-main', weekday:6, nth:1, start:'07:00', end:'13:00', repeat:'weekly', from:'', lead:7, horizon:60, cap:1, blackout:[], until:'' }], manual:[{ id:'m3', locationId:'raman-main', date:'2026-11-12', start:'08:00', end:'12:00', lead:7, horizon:60, cap:2, org:'' }], removed:[],
+      status:'active', orgs:[{ org:'BYU-Idaho Pre-Med Society', slug:'byui-premed', status:'active', since:'2026-09-18', availability:'shared', years:'Any year', approveEach:false }], pausedUntil:null, submittedBy:'Staff', submittedByName:'Director of Shadowing', submittedOn:'2026-09-18', renewed:'Fall 2026',
+      bio:'', photo:'', blocks:['ethan'], activity:[{ at:'2026-10-04 07:30', who:'Dr. Raman', what:'Recorded no-show for Ethan Woodruff, Oct 3; blocked student' },{ at:'2026-09-19 09:00', who:'Admin', what:'Profile approved' }] },
+    { id:'ahn', first:'Grace', last:'Ahn', suffix:'', display:'', credentials:['MD'], specialty:'Dermatology',
+      locations:[{ id:'ahn-main', name:'Rexburg Dermatology', address:'50 W Main St', city:'Rexburg', state:'ID', zip:'83440', meet:'Front desk', parking:'Front lot', dayof:'Office manager, 208-555-0163', reqs:['Confidentiality agreement on site','Business casual'], paperwork:{ mode:'none', statement:'', links:[], files:[] }, isDefault:true }],
+      prefs:{ attendanceTo:'physician', reminderDays:2, summary:'weekly', renewalReminders:true },
+      email:'gahn@rexderm.example',
+      rules:[{ id:'r4', locationId:'ahn-main', weekday:5, nth:1, start:'08:00', end:'12:00', repeat:'monthly', from:'', lead:14, horizon:60, cap:1, blackout:[], until:'' }], manual:[], removed:[],
+      status:'active', orgs:[{ org:'BYU-Idaho Pre-Med Society', slug:'byui-premed', status:'active', since:'2026-10-01', availability:'shared', years:'Any year', approveEach:false }], pausedUntil:null, submittedBy:'Staff', submittedByName:'Office', submittedOn:'2026-10-01', renewed:'Fall 2026',
+      bio:'', photo:'', blocks:[], activity:[{ at:'2026-10-02 10:00', who:'Admin', what:'Profile approved' }] },
+    { id:'whitfield', first:'Caleb', last:'Whitfield', suffix:'', display:'', credentials:['MD'], specialty:'Neonatology',
+      locations:[{ id:'whitfield-main', name:'Rexburg Pediatrics', address:'1100 S Yellowstone Hwy', city:'Rexburg', state:'ID', zip:'83440', meet:'Front desk', parking:'Front lot', dayof:'Office manager', reqs:['Confidentiality agreement on site','Business casual'], paperwork:{ mode:'none', statement:'', links:[], files:[] }, isDefault:true }],
+      prefs:{ attendanceTo:'physician', reminderDays:2, summary:'weekly', renewalReminders:true }, email:'cwhitfield@rexpeds.example',
+      rules:[{ id:'r5', locationId:'whitfield-main', weekday:1, nth:2, start:'13:00', end:'17:00', repeat:'monthly', from:'', lead:10, horizon:60, cap:1, blackout:[], until:'' }], manual:[], removed:[],
+      status:'pending', orgs:[{ org:'BYU-Idaho Pre-Med Society', slug:'byui-premed', status:'pending', since:'2026-10-23', availability:'shared', years:'Any year', approveEach:false }], pausedUntil:null, submittedBy:'Physician', submittedByName:'', submittedOn:'2026-10-23', renewed:'',
+      bio:'', photo:'', blocks:[], activity:[{ at:'2026-10-23 19:48', who:'Dr. Whitfield', what:'Created profile and connected to BYU-Idaho Pre-Med Society' }] },
+    { id:'lindqvist', first:'Hannah', last:'Lindqvist', suffix:'', display:'', credentials:['DO'], specialty:'Internal Medicine',
+      locations:[{ id:'lindqvist-main', name:'Rexburg Internal Medicine Associates', address:'430 N 3rd E', city:'Rexburg', state:'ID', zip:'83440', meet:'Front desk', parking:'Patient lot', dayof:'Clinic manager', reqs:['Confidentiality agreement on site'], paperwork:{ mode:'none', statement:'', links:[], files:[] }, isDefault:true }],
+      prefs:{ attendanceTo:'physician', reminderDays:2, summary:'weekly', renewalReminders:true }, email:'hlindqvist@rima.example',
+      rules:[{ id:'r6', locationId:'lindqvist-main', weekday:3, nth:1, start:'08:00', end:'12:00', repeat:'monthly', from:'', lead:14, horizon:60, cap:1, blackout:[], until:'' }], manual:[], removed:[],
+      status:'paused', orgs:[{ org:'BYU-Idaho Pre-Med Society', slug:'byui-premed', status:'paused', since:'2026-09-12', availability:'shared', years:'Any year', approveEach:false }], pausedUntil:'2027-01-10', submittedBy:'Staff', submittedByName:'Director of Shadowing', submittedOn:'2026-09-12', renewed:'Fall 2026',
+      bio:'', photo:'', blocks:[], activity:[{ at:'2026-10-10 12:30', who:'Dr. Lindqvist', what:'Paused until Jan 10, 2027' }] }
+  ],
+  students: [
+    { id:'avery', first:'Avery', last:'Jensen', suffix:'', display:'', photo:'', bio:'', email:'avery.jensen@byui.edu', phone:'+12085550131', year:'Junior', gradTerm:'2028-04', activated:null, elig:{ status:'none' }, strikes:0, blockedAt:null, graduated:null, me:true },
+    { id:'noah', first:'Noah', last:'Pratt', suffix:'', display:'', photo:'', bio:'Senior in biochemistry, applying this cycle. I have spent a summer as a CNA and want to see how a clinic day actually runs, especially how physicians handle difficult conversations.', email:'noah.pratt@byui.edu', phone:'+12085550118', year:'Senior', gradTerm:'2027-04', activated:'2025-10-02', elig:{ status:'approved', method:'code', on:'2026-09-16', expires:'2027-01-04' }, strikes:0, blockedAt:null, graduated:null },
+    { id:'maya', first:'Maya', last:'Castillo', suffix:'', display:'', photo:'', bio:'Junior, EMT on weekends. Interested in emergency and family medicine and in how physicians keep a patient calm.', email:'maya.castillo@byui.edu', phone:'+12085550157', year:'Junior', gradTerm:'2028-04', activated:'2026-10-02', elig:{ status:'approved', method:'code', on:'2026-10-02', expires:'2027-01-04' }, strikes:0, blockedAt:null, graduated:null },
+    { id:'ethan', first:'Ethan', last:'Woodruff', suffix:'', display:'', photo:'', bio:'', email:'ethan.woodruff@byui.edu', phone:'+12085550199', year:'Senior', gradTerm:'2027-07', activated:'2025-09-20', elig:{ status:'approved', method:'code', on:'2026-09-15', expires:'2027-01-04' }, strikes:1, blockedAt:'2026-10-04', graduated:null },
+    { id:'lily', first:'Lily', last:'Hansen', suffix:'', display:'', photo:'', bio:'', email:'lily.hansen@byui.edu', phone:'+12085550172', year:'Senior', gradTerm:'2026-07', activated:'2025-09-18', elig:{ status:'expired', method:'code', on:'2026-04-20', expires:'2026-09-14' }, strikes:0, blockedAt:null, graduated:'2026-07-24' },
+    { id:'sofia', first:'Sofia', last:'Reyes', suffix:'', display:'', photo:'', bio:'', email:'sofia.reyes@byui.edu', phone:'+12085550164', year:'Sophomore', gradTerm:'2029-04', activated:null, elig:{ status:'pending', method:'manual', requestedOn:'2026-10-24', note:'I finished the Canvas course on Oct 20 but never got the code email.' }, strikes:0, blockedAt:null, graduated:null }
+  ],
+  bookings: [
+    { id:'b1', studentId:'avery', doctorId:'marsh', date:'2026-10-13', start:'08:00', end:'12:00', status:'completed', hours:4, hoursStatus:'pending', loggedOn:'2026-10-13', refl:{ observed:'Well-child visits and two joint injections.', surprised:'How much of the visit is counseling, not examining.', question:'', free:'' } },
+    { id:'b2', studentId:'avery', doctorId:'oyelaran', date:'2026-11-12', start:'07:30', end:'12:00', status:'confirmed', hours:null, hoursStatus:'none' },
+    { id:'b3', studentId:'noah', doctorId:'raman', date:'2026-10-17', start:'07:00', end:'13:00', status:'completed', hours:5, hoursStatus:'pending', loggedOn:'2026-10-17' },
+    { id:'b4', studentId:'maya', doctorId:'marsh', date:'2026-10-27', start:'08:00', end:'12:00', status:'confirmed', hours:null, hoursStatus:'none' },
+    { id:'b5', studentId:'ethan', doctorId:'raman', date:'2026-10-03', start:'07:00', end:'13:00', status:'noshow', hours:null, hoursStatus:'none' },
+    { id:'b6', studentId:'noah', doctorId:'marsh', date:'2026-09-29', start:'08:00', end:'12:00', status:'completed', hours:4, hoursStatus:'confirmed' },
+    { id:'b7', studentId:'maya', doctorId:'raman', date:'2026-11-07', start:'07:00', end:'13:00', status:'confirmed', hours:null, hoursStatus:'none' },
+    { id:'b8', studentId:'maya', doctorId:'raman', date:'2026-11-14', start:'07:00', end:'13:00', status:'confirmed', hours:null, hoursStatus:'none' },
+    { id:'b9', studentId:'maya', doctorId:'ahn', date:'2026-12-04', start:'08:00', end:'12:00', status:'confirmed', hours:null, hoursStatus:'none' },
+    { id:'b10', studentId:'noah', doctorId:'marsh', date:'2026-12-08', start:'08:00', end:'12:00', status:'requested', queuePos:1, requestedAt:'2026-10-21', hours:null, hoursStatus:'none' },
+    { id:'b18', studentId:'maya', doctorId:'marsh', date:'2026-12-08', start:'08:00', end:'12:00', status:'queued', queuePos:2, requestedAt:'2026-10-24', hours:null, hoursStatus:'none' },
+    { id:'b11', studentId:'noah', doctorId:'marsh', date:'2026-03-10', start:'08:00', end:'12:00', status:'completed', hours:4, hoursStatus:'confirmed' },
+    { id:'b12', studentId:'ethan', doctorId:'lindqvist', date:'2026-02-11', start:'08:00', end:'12:00', status:'completed', hours:4, hoursStatus:'confirmed' },
+    { id:'b13', studentId:'noah', doctorId:'raman', date:'2025-11-15', start:'07:00', end:'13:00', status:'completed', hours:5.5, hoursStatus:'confirmed' },
+    { id:'b14', studentId:'ethan', doctorId:'raman', date:'2025-10-18', start:'07:00', end:'13:00', status:'completed', hours:6, hoursStatus:'confirmed' },
+    { id:'b15', studentId:'lily', doctorId:'marsh', date:'2026-03-17', start:'08:00', end:'12:00', status:'completed', hours:4, hoursStatus:'confirmed' },
+    { id:'b16', studentId:'lily', doctorId:'oyelaran', date:'2026-05-14', start:'07:30', end:'12:00', status:'completed', hours:4.5, hoursStatus:'confirmed' },
+    { id:'b17', studentId:'lily', doctorId:'raman', date:'2025-11-01', start:'07:00', end:'13:00', status:'completed', hours:6, hoursStatus:'confirmed' }
+  ],
+  coordinators: [
+    { id:'oakes', first:'Teresa', last:'Oakes', suffix:'', display:'', email:'toakes@uvfm.example', phone:'+12085550142', createdAt:'2026-09-30',
+      auth:[{ doctorId:'marsh', locationIds:['marsh-main'], approve:true, status:'active', since:'2026-09-30', by:'Staff setup, confirmed by Dr. Marsh' }, { doctorId:'ahn', locationIds:['ahn-main'], approve:false, status:'active', since:'2026-10-01', by:'Invited by Dr. Ahn' }] },
+    { id:'ferris', first:'Dana', last:'Ferris', suffix:'', display:'', email:'dferris@srrmc.example', phone:'+12085550160', createdAt:'2026-09-18',
+      auth:[{ doctorId:'raman', locationIds:['raman-main'], approve:true, status:'active', since:'2026-09-18', by:'Staff setup, confirmed by Dr. Raman' }] }
+  ],
+  waitlist: [{ id:'w1', studentId:'noah', doctorId:'ahn', createdAt:'2026-10-20', status:'waiting' }],
+  capRequests: [{ id:'c1', studentId:'maya', month:'2026-11', note:'Applying this cycle and I want more ER exposure before my interviews.', requestedAt:'2026-10-24', status:'pending', extra:null }],
+  demand: []
+};
+const CFG = DB.config;
+/* Names are stored as parts; `name` is the generated display string ("Elena Marsh, MD, MPH"; a preferred display name replaces the name part only). */
+const CAP_MAX = 50;
+const fullName = p => { const base = (p.display && p.display.trim()) || [p.first, p.last].filter(Boolean).join(' ') + (p.suffix ? ' ' + p.suffix : ''); const cr = (p.credentials || []).filter(Boolean); return base + (cr.length ? ', ' + cr.join(', ') : ''); };
+const syncName = p => { p.name = fullName(p); return p; };
+DB.physicians.forEach(syncName); DB.students.forEach(syncName); DB.coordinators.forEach(syncName);
+/* Phones are stored as E.164 and formatted for display. */
+const fmtPhone = p => { const d = String(p || '').replace(/\D/g, ''); if (d.length === 11 && d[0] === '1') return '(' + d.slice(1, 4) + ') ' + d.slice(4, 7) + '-' + d.slice(7); if (d.length === 10) return '(' + d.slice(0, 3) + ') ' + d.slice(3, 6) + '-' + d.slice(6); return p || ''; };
+const toE164 = p => { const d = String(p || '').replace(/\D/g, ''); return d.length === 10 ? '+1' + d : d.length === 11 ? '+' + d : (p || ''); };
+const coord = id => DB.coordinators.find(c => c.id === id);
+/* Coordinators authorized for a physician, optionally at one location. */
+const coordsFor = (d, l) => DB.coordinators.filter(c => c.auth.some(a => a.doctorId === d.id && a.status === 'active' && (!l || a.locationIds.includes(l.id))));
+const authFor = (c, d) => c.auth.find(a => a.doctorId === d.id);
+/* The coordinator who receives scheduling mail for a location (the first active one), or null. */
+const locSched = (d, l) => { const c = coordsFor(d, l)[0]; return c ? { name: c.name, email: c.email } : null; };
+const DEFAULT_LEAD = 14;
+const link = d => (d.orgs || []).find(x => x.slug === CFG.slug) || (d.orgs || [])[0] || { years: 'Any year', approveEach: false };
+/* Pages that act for one organization set VIEW_SLUG; slots then hide what that organization may not see. The portal and onboarding leave it null. */
+let VIEW_SLUG = null;
+const orgLabel = (d, slug) => { const o = (d.orgs || []).find(x => x.slug === slug); return o ? o.org : slug; };
+/* Whether the viewing organization may see a rule or date; everything when no organization is viewing. */
+const orgSees = (d, org) => !VIEW_SLUG || (org ? org === VIEW_SLUG : link(d).availability !== 'own');
+const orgOnlyText = (d, org) => org ? (VIEW_SLUG ? ' · your organization only' : ' · ' + esc(orgLabel(d, org)) + ' only') : '';
+const SUMMARY_OPTS = [['weekly', 'Every week'], ['every_2_weeks', 'Every 2 weeks'], ['monthly', 'Every month']];
+const summaryText = p => p.summary && p.summary !== 'off' ? ({ weekly: 'weekly', every_2_weeks: 'every 2 weeks', monthly: 'monthly' })[p.summary] : 'off';
+const locOf = (d, id) => (d.locations || []).find(l => l.id === id) || (d.locations || []).find(l => l.isDefault) || (d.locations || [])[0] || { name: '', address: '', city: '', state: '', zip: '', meet: '', parking: '', dayof: '', sched: null, reqs: [], paperwork: { mode: 'none', statement: '', links: [], files: [] } };
+/* loc(d) = the default location; loc(d, slotOrBooking) = the location that slot or booking is at. */
+const loc = (d, x) => locOf(d, x && x.locationId);
+// Short site line for cards and tables: the default location, or a count when a physician works from several.
+const siteLine = (d, sep) => { const ls = d.locations || []; const cities = [...new Set(ls.map(l => l.city))]; return (ls.length > 1 ? ls.length + ' locations' : loc(d).name) + (sep || ' · ') + cities.join(', '); };
+const fullAddress = l => [l.address, l.city, (l.state || '') + (l.zip ? ' ' + l.zip : '')].filter(x => x && x.trim()).join(', ');
+/* Specialty list shared by the intake dropdown, student filter and analytics. "Other" on the intake adds to it. */
+const SPECIALTIES = ['Allergy & Immunology','Anesthesiology','Cardiology','Cardiothoracic Surgery','Critical Care','Dermatology','Emergency Medicine','Endocrinology','Family Medicine','Gastroenterology','General Surgery','Geriatrics','Hematology & Oncology','Hospital Medicine','Infectious Disease','Internal Medicine','Interventional Radiology','Neonatology','Nephrology','Neurology','Neurosurgery','Obstetrics & Gynecology','Occupational Medicine','Ophthalmology','Orthopedic Surgery','Otolaryngology (ENT)','Pain Medicine','Palliative Care','Pathology','Pediatrics','Pediatric Subspecialty','Physical Medicine & Rehabilitation','Plastic Surgery','Podiatry','Psychiatry','Pulmonology','Radiation Oncology','Radiology (Diagnostic)','Rheumatology','Sleep Medicine','Sports Medicine','Urgent Care','Urology','Vascular Surgery','Wound Care'];
+const termsSorted = () => [...CFG.terms].sort((a, b) => a.start < b.start ? -1 : 1);
+function termWindow(t) { const ts = termsSorted(); const i = ts.findIndex(x => x.id === t.id); const nx = ts[i + 1]; return { start: t.start, until: nx ? nx.start : '9999-12-31' }; }
+const termFor = dateIso => termsSorted().filter(t => t.start <= dateIso).slice(-1)[0] || null;
+const currentTerm = () => termFor(TODAY_ISO);
+const nextTerm = () => termsSorted().find(t => t.start > TODAY_ISO) || null;
+const termById = id => CFG.terms.find(t => t.id === id);
+function inPeriod(dateIso, period) {
+  if (period === 'all') return true;
+  if (period === 'year') return dateIso.slice(0, 4) === TODAY_ISO.slice(0, 4);
+  const t = termById(period === 'term' ? currentTerm().id : period); if (!t) return false;
+  const w = termWindow(t); return dateIso >= w.start && dateIso < w.until;
+}
+const me = () => DB.students.find(s => s.me);
+const doc = id => DB.physicians.find(d => d.id === id);
+const stu = id => DB.students.find(s => s.id === id);
+const GONE = ['cancelled_student', 'cancelled_physician', 'declined', 'auto_declined', 'withdrawn'];
+const active = () => DB.bookings.filter(b => !GONE.includes(b.status));
+/* A booking in the request queue for a slot: requested = the one active request the physician sees; queued = waiting behind it. */
+const inQueue = b => b.status === 'requested' || b.status === 'queued';
+const overlaps = (a, b) => a.date === b.date && a.start < b.end && b.start < a.end;
+/* The student's confirmed visit or active request that overlaps a slot, if any. */
+const studentConflict = (studentId, s) => DB.bookings.find(b => b.studentId === studentId && (b.status === 'confirmed' || inQueue(b)) && overlaps(b, { date: s.iso, start: s.start, end: s.end }));
+const declinedFor = (studentId, s) => DB.bookings.find(b => b.studentId === studentId && (b.status === 'declined' || b.status === 'auto_declined') && b.date === s.iso && b.start === s.start);
+const live = () => DB.bookings.filter(b => b.status === 'requested' || b.status === 'confirmed' || b.status === 'queued');
+const confirmedUpcoming = d => DB.bookings.filter(b => b.doctorId === d.id && b.status === 'confirmed').sort((a, b) => a.date < b.date ? -1 : 1);
+const logActivity = (d, who, what) => d.activity.unshift({ at: stamp(), who, what });
+
+/* ---------- slot engine ---------- */
+/* nth: 1–4 or 5 for "last". Returns a Date or null. */
+function nthWeekday(y, m, wd, nth) {
+  if (nth === 5) { const x = new Date(y, m + 1, 0); while (x.getDay() !== wd) x.setDate(x.getDate() - 1); return x; }
+  const x = new Date(y, m, 1); while (x.getDay() !== wd) x.setDate(x.getDate() + 1); x.setDate(x.getDate() + 7 * (nth - 1)); return x.getMonth() === m ? x : null;
+}
+const NTH = { 1: '1st', 2: '2nd', 3: '3rd', 4: '4th', 5: 'Last' };
+const repeatText = r => r.repeat === 'daily' ? 'Every weekday' : r.repeat === 'weekly' ? WDL[r.weekday] + 's' : r.repeat === 'every_2_weeks' ? 'Every other ' + WDL[r.weekday] : NTH[r.nth] + ' ' + WDL[r.weekday] + ' of the month';
+function slotsFor(d) {
+  const out = [];
+  const mine = VIEW_SLUG ? (d.orgs || []).find(o => o.slug === VIEW_SLUG) : null;
+  const push = (date, start, end, source, lead, cap, locationId, org) => {
+    if (d.removed.includes(date + '|' + start)) return;
+    // An organization sees shared dates (when its connection uses shared availability) and dates added for it alone.
+    if (VIEW_SLUG && (org ? org !== VIEW_SLUG : (mine && mine.availability === 'own'))) return;
+    const bookings = active().filter(b => b.doctorId === d.id && b.date === date && b.start === start);
+    const confirmed = bookings.filter(b => b.status === 'confirmed' || b.status === 'completed' || b.status === 'noshow');
+    const queue = bookings.filter(inQueue).sort((a, b) => (a.queuePos || 0) - (b.queuePos || 0));
+    const booking = confirmed[0] || queue[0] || null;
+    out.push({ key: date + '|' + start, iso: date, start, end, source, lead, cap, locationId, org: org || '', booking, bookings, confirmed, queue, seatsLeft: Math.max(0, cap - confirmed.length), tooSoon: daysOut(date) < lead, month: parse(date).getMonth(), year: parse(date).getFullYear() });
+  };
+  d.rules.forEach(r => {
+    const end = new Date(TODAY); end.setDate(end.getDate() + r.horizon);
+    const from = r.from ? parse(r.from) : null; const until = r.until ? parse(r.until) : null;
+    const ok = x => x >= TODAY && x <= end && (!from || x >= from) && (!until || x <= until) && !r.blackout.includes(x.getMonth());
+    const add = x => push(iso(x), r.start, r.end, 'rule', r.lead, r.cap, r.locationId, r.org);
+    if (r.repeat === 'monthly') {
+      for (let m = new Date(TODAY.getFullYear(), TODAY.getMonth(), 1); m <= end; m = new Date(m.getFullYear(), m.getMonth() + 1, 1)) {
+        const x = nthWeekday(m.getFullYear(), m.getMonth(), r.weekday, r.nth); if (x && ok(x)) add(x);
+      }
+    } else if (r.repeat === 'daily') {
+      for (let x = new Date(TODAY); x <= end; x.setDate(x.getDate() + 1)) if (x.getDay() >= 1 && x.getDay() <= 5 && ok(x)) add(x);
+    } else {
+      let x = from && from > TODAY ? new Date(from) : new Date(from || TODAY);
+      while (x.getDay() !== r.weekday) x.setDate(x.getDate() + 1);
+      const step = r.repeat === 'every_2_weeks' ? 14 : 7;
+      for (; x <= end; x.setDate(x.getDate() + step)) if (ok(x)) add(x);
+    }
+  });
+  d.manual.forEach(mm => { if (parse(mm.date) >= TODAY && daysOut(mm.date) <= (mm.horizon || 365)) push(mm.date, mm.start, mm.end, 'manual', mm.lead || 0, mm.cap || 1, mm.locationId, mm.org); });
+  out.sort((a, b) => (a.iso + a.start) < (b.iso + b.start) ? -1 : 1);
+  return out;
+}
+const bookable = d => slotsFor(d).filter(s => s.seatsLeft > 0 && !s.tooSoon);
+const nextOpen = d => bookable(d)[0];
+const ruleText = r => repeatText(r) + ' ' + span(r.start, r.end) + ' · ' + r.lead + '-day notice';
+const docRuleSummary = d => d.rules.filter(r => orgSees(d, r.org)).map(r => r.repeat === 'daily' ? 'Weekdays' : r.repeat === 'weekly' ? WDL[r.weekday].slice(0, 3) + ' · weekly' : r.repeat === 'every_2_weeks' ? WDL[r.weekday].slice(0, 3) + ' · every 2 weeks' : NTH[r.nth] + ' ' + WDL[r.weekday].slice(0, 3) + ' · monthly').join('; ') + (d.manual.length ? ' · +' + d.manual.length + ' date' + (d.manual.length > 1 ? 's' : '') : '');
+function capFor(studentId, month) { return CFG.capPerMonth + DB.capRequests.filter(c => c.studentId === studentId && c.month === month && c.status === 'granted').reduce((a, c) => a + c.extra, 0); }
+const monthCount = (studentId, month) => live().filter(b => b.studentId === studentId && monthKey(b.date) === month).length;
+const blockedFor = studentId => DB.physicians.filter(d => d.blocks.includes(studentId)).map(d => d.id);
+/* After a seat frees or a decision is made, the next waiting request becomes the one the physician sees. Returns the promoted booking or null. */
+function promoteQueue(d, date, start) {
+  const s = slotsFor(d).find(x => x.iso === date && x.start === start); if (!s) return null;
+  if (s.queue.some(b => b.status === 'requested') || s.seatsLeft === 0) return null;
+  const next = s.queue.find(b => b.status === 'queued'); if (!next) return null;
+  next.status = 'requested'; return next;
+}
+/* A student's place in line is the place they joined at; it never moves as those ahead are answered. */
+const queueText = (s, b) => b.queuePos ? '#' + b.queuePos + ' in line' : '';
+/* Whether a coordinator at one of the physician's locations may answer attendance questions: only when the physician routes them there. */
+const attendanceDelegated = d => d.prefs.attendanceTo === 'scheduling';
+function cancelBooking(b, by, actorName, note) {
+  b.status = by === 'student' || by === 'student_late' ? 'cancelled_student' : 'cancelled_physician';
+  if (by === 'student_late') { const st = stu(b.studentId); b.late = true; b.lateNote = note || ''; st.strikes = (st.strikes || 0) + 1; st.blockedAt = TODAY_ISO; by = 'student'; }
+  const d = doc(b.doctorId); logActivity(d, actorName || (by === 'student' ? stu(b.studentId).name : by === 'admin' ? 'Admin' : first(d.name)), 'Cancelled visit with ' + stu(b.studentId).name + ', ' + fmt(b.date));
+  DB.waitlist.filter(w => w.doctorId === d.id && w.status === 'waiting').forEach(w => { w.status = 'notified'; w.notifiedAt = TODAY_ISO; });
+  const p = promoteQueue(d, b.date, b.start); if (p) logActivity(d, 'System', 'Next request in line sent for ' + fmt(b.date) + ': ' + stu(p.studentId).name);
+}
+
+/* ---------- chips ---------- */
+const bookingChip = b => ({
+  requested: '<span class="chip warn">Awaiting physician approval</span>',
+  queued: '<span class="chip">In line</span>',
+  declined: '<span class="chip bad">Declined</span>',
+  auto_declined: '<span class="chip">Not approved before the visit</span>',
+  withdrawn: '<span class="chip">Withdrawn</span>',
+  confirmed: '<span class="chip acc"><span class="dot"></span>Confirmed</span>',
+  completed: b.hoursStatus === 'confirmed' ? '<span class="chip good">Attendance confirmed</span>' : b.hoursStatus === 'pending' ? '<span class="chip warn">Awaiting physician confirmation</span>' : '<span class="chip">Hours not logged</span>',
+  noshow: '<span class="chip bad">No-show</span>',
+  cancelled_student: b.late ? '<span class="chip bad">Cancelled late</span>' : '<span class="chip">Cancelled</span>',
+  cancelled_physician: '<span class="chip">Cancelled by physician</span>'
+})[b.status];
+const docChip = d => ({ active:'<span class="chip good">Active</span>', pending:'<span class="chip warn">Awaiting review</span>', paused:'<span class="chip">' + (d.pausedUntil ? 'Paused until ' + fmt(d.pausedUntil) : 'Paused') + '</span>' })[d.status];
+const avatarHtml = (d, cls) => `<div class="avatar ${cls || ''}">${d.photo ? `<img src="${d.photo}" alt="">` : initials(d.name)}</div>`;
+
+/* ---------- toast and tooltips ---------- */
+let toastT;
+function toast(msg) { const t = document.getElementById('toast'); if (!t) return; t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 3400); }
+function tipShow(el) { const tip = document.getElementById('tip'); if (!tip) return; tip.textContent = el.dataset.tip; tip.hidden = false; const r = el.getBoundingClientRect(); const w = Math.min(260, window.innerWidth - 24); tip.style.maxWidth = w + 'px'; const tw = tip.offsetWidth; let x = r.left + r.width / 2 - tw / 2; x = Math.max(8, Math.min(x, window.innerWidth - tw - 8)); let y = r.top - tip.offsetHeight - 8; if (y < 8) y = r.bottom + 8; tip.style.left = x + 'px'; tip.style.top = y + 'px'; }
+function tipHide() { const tip = document.getElementById('tip'); if (tip) tip.hidden = true; }
+document.addEventListener('pointerover', e => { const el = e.target.closest('.info'); if (el) tipShow(el); });
+document.addEventListener('pointerout', e => { if (e.target.closest('.info')) tipHide(); });
+document.addEventListener('focusin', e => { const el = e.target.closest('.info'); if (el) tipShow(el); });
+document.addEventListener('focusout', e => { if (e.target.closest('.info')) tipHide(); });
+document.addEventListener('click', e => { const el = e.target.closest('.info'); if (el) { e.stopPropagation(); tipShow(el); setTimeout(tipHide, 2500); } });
+function copyText(text, el) {
+  const done = () => toast('Copied.');
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(() => { try { const r = document.createRange(); r.selectNodeContents(el); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); toast('Select and copy the code.'); } catch (e) { toast('Copy failed.'); } });
+  else toast('Select and copy the code.');
+}
+
+const PERMS = [['physicians', 'Physicians'], ['students', 'Students'], ['bookings', 'Bookings'], ['analytics', 'Analytics'], ['settings', 'Program settings'], ['invite', 'Administrator invitations'], ['exports', 'Data exports']];
+const ALERTS = [['intake', 'New physician intake'], ['access', 'Student access request'], ['noshow', 'No-show recorded'], ['attendance', 'Attendance unresolved'], ['bounce', 'Physician email delivery failure'], ['cap', 'Cap increase requested']];
+const eligLabel = s => ({ none: 'Not activated', pending: 'Awaiting approval', approved: 'Approved', denied: 'Not approved', expired: 'Expired', revoked: 'Revoked' })[(s.elig || {}).status || 'none'];
+const canBook = s => s.activated && !s.blockedAt && !s.graduated && (s.elig || {}).status === 'approved';
+
+/* ---------- confirmation modal ---------- */
+let MODAL = null;
+function openModal(o) {
+  let m = document.getElementById('modal'); if (!m) { m = document.createElement('div'); m.id = 'modal'; document.body.appendChild(m); }
+  MODAL = { onOk: o.onOk };
+  m.innerHTML = `<div class="modal-bg" data-modal="bg"><div class="modal stack" role="dialog" aria-modal="true" aria-label="${esc(o.title)}"><h3>${esc(o.title)}</h3>${o.body || ''}<div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn" type="button" data-modal="cancel">${esc(o.cancel || 'Keep')}</button><button class="btn ${o.danger ? 'danger' : 'primary'}" type="button" data-modal="ok">${esc(o.ok || 'Confirm')}</button></div></div></div>`;
+  m.hidden = false; const ok = m.querySelector('[data-modal="ok"]'); if (ok) ok.focus();
+}
+function closeModal() { const m = document.getElementById('modal'); if (m) { m.hidden = true; m.innerHTML = ''; } MODAL = null; }
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-modal]'); if (!t) return;
+  const k = t.dataset.modal; if (k === 'bg' && e.target !== t) return;
+  if (k === 'ok') { const fn = MODAL && MODAL.onOk; if (fn && fn(document.getElementById('modal')) === false) return; }
+  closeModal(); if (k === 'ok' && typeof render === 'function') render();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && MODAL) closeModal(); });
+document.addEventListener('change', e => { if (e.target.id === 'pu') { const r = document.querySelector('input[name="pmode"][value="date"]'); if (r) r.checked = true; } });
+/* confirmAction(title, text, okLabel, onOk, danger=true) — the action runs only after the person confirms. */
+const confirmAction = (title, text, ok, onOk, danger) => openModal({ title, body: `<p>${text}</p>`, ok, onOk, danger: danger !== false, cancel: 'Go back' });
+/* Step-up: sensitive admin actions ask for a fresh code to the signed-in admin's email. */
+function stepUp(title, text, ok, onOk) {
+  openModal({ title, ok, cancel: 'Go back', body: `<p>${text}</p><p>We emailed a 6-digit code to <b>${esc(CFG.sponsorEmail)}</b>. Enter it to continue.</p><div class="field" style="max-width:200px"><input id="su-code" class="mono" inputmode="numeric" maxlength="7" placeholder="000 000" autocomplete="one-time-code" aria-label="Code"></div>`,
+    onOk: m => { const v = ((m.querySelector('#su-code') || {}).value || '').replace(/\s+/g, ''); if (!/^\d{6}$/.test(v)) { toast('Enter the 6-digit code.'); return false; } onOk(); } });
+}
+function pauseDialog(d, actorName) {
+  openModal({ title: 'Pause ' + d.name + '?', ok: 'Pause', cancel: 'Go back',
+    body: `<p>Open dates are hidden from students while paused. Visits already booked stay unless they are cancelled.</p>
+      <label class="opt"><input type="radio" name="pmode" value="manual" checked> Until resumed</label>
+      <label class="opt"><input type="radio" name="pmode" value="date"> Until a date</label>
+      <div class="field" style="max-width:200px;margin-left:26px"><input type="date" id="pu" value="${PUI.pauseUntil}" min="${TODAY_ISO}" aria-label="Pause until"></div>`,
+    onOk: m => { const mode = (m.querySelector('input[name="pmode"]:checked') || {}).value; const until = mode === 'date' ? ((m.querySelector('#pu') || {}).value || null) : null;
+      d.status = 'paused'; d.pausedUntil = until; logActivity(d, actorName, until ? 'Paused until ' + fmt(until) : 'Paused until resumed'); toast(until ? 'Paused until ' + fmt(until) + '.' : 'Paused until resumed.'); } });
+}
+
+/* ---------- physician scheduling, shared by physician.html (portal), intake.html (onboarding) and admin.html (read-only view) ---------- */
+const PUI = { calMonth: new Date(2026, 10, 1), calSel: null, showRuleForm: false, showDateForm: false, pauseUntil: '2027-01-11', ruleDraft: null, dateDraft: null, locDraft: null, histOpen: false, adminTab: 'profile', profSec: { locations: false, prefs: false, activity: false }, coordInvite: null, locScope: null };
+const scopedLoc = d => PUI.locScope ? (PUI.locScope[0] || null) : (loc(d).id || null);
+const blankRule = d => ({ id: null, locationId: scopedLoc(d), org: '', repeat: 'weekly', weekday: 2, nth: 1, start: '08:00', end: '12:00', from: '', until: '', lead: DEFAULT_LEAD, horizon: 60, cap: 1 });
+const blankDate = d => ({ id: null, locationId: scopedLoc(d), org: '', date: '2026-12-12', start: '09:00', end: '13:00', lead: DEFAULT_LEAD, horizon: 60, cap: 1 });
+const blankLoc = () => ({ id: null, name: '', address: '', city: 'Rexburg', state: 'ID', zip: '', meet: '', parking: '', dayof: '', reqs: [], paperwork: { mode: 'none', statement: '', links: [], files: [] }, isDefault: false });
+const HORIZON_TIP = 'How far ahead students can see and book these dates.';
+const HORIZON_LABEL = 'Available in advance (days)';
+const TIPS = {
+  notice: 'The fewest days ahead a student may book. Dates closer than this are shown but cannot be chosen.',
+  horizon: 'How far into the future dates are generated and shown to students.',
+  cap: 'How many students can come on the same date. Usually 1. Each seat is approved separately when you approve students by name.',
+  approve: 'Yes: each request is emailed to you to approve or decline before it is confirmed. No: the first student to book is confirmed automatically.',
+  attendanceTo: 'After a visit, the student logs their hours and one email asks whether they attended. Choose who should answer it: you, or the scheduling coordinator at that location (you, when the location has none).',
+  block: 'Hides your profile from this student and stops them booking with you. They are not notified. Visits already confirmed are unchanged unless you cancel them. The organization\'s administrators can see the block.',
+  pause: 'Hides your open dates until you resume, or until a date you pick. Visits already booked stay unless you cancel them.',
+  renew: 'Confirms your schedule carries into the next term. Unrenewed availability pauses at the term start.',
+  individual: 'A single date outside your recurring schedule. It follows its own notice and visibility settings.',
+  recurring: 'A repeating pattern that generates dates automatically. Change it any time; booked dates are never changed.',
+  paperwork: 'Anything this location requires before a first visit. Students see it on your card and in their confirmation. Attach forms or add links.',
+  remove: 'Removes an open date. If a student has booked it, cancel the visit instead so they are notified.',
+  waitlistCount: 'Students who asked to be told when one of your dates opens.',
+  location: 'Each visit happens at one practice location. Its address, arrival instructions and paperwork go to the student.',
+  coordinator: 'A scheduling coordinator has their own Keivos sign-in and manages this location for you: availability, confirmations and cancellations. You choose whether they may approve student requests, and your email preference decides whether attendance questions go to them. They never change your profile, organizations or email.',
+  queue: 'Students who ask for the same date wait in line. You see one request at a time per open seat; when you approve or decline it, the next student in line is sent to you. Requests never expire on their own; anyone still waiting when the visit starts is declined automatically.',
+  shared: 'Shared: every organization you are connected to sees these dates; the first student to book takes the seat. Own: only this organization sees dates you add for it.',
+  summary: 'One email on the schedule you choose with upcoming visits, pending requests and unanswered attendance questions. Not sent when there is nothing to report.',
+  applies: 'Shared availability is seen by every organization you are connected to; the first student to book takes the seat. Choose one organization to offer these dates to its students only.',
+  renewalReminders: 'Three weeks before each term an organization asks you to confirm your availability. If you turn these off and do not renew, your dates pause automatically when the term starts.'
+};
+/* Email preferences block, shared by the portal and onboarding. */
+function prefsFields(p) {
+  const on = p.summary && p.summary !== 'off';
+  return `
+    <label class="opt"><input type="checkbox" data-field="prefs.summaryOn" ${on ? 'checked' : ''}> <span><b>Regular shadowing summary${info(TIPS.summary)}</b><div class="fine">One email with upcoming visits and outstanding actions, on the schedule you choose. Only sent when there is something to report.</div></span></label>
+    ${on ? `<div class="form"><div class="field narrow"><label>Send it</label><select data-field="prefs.summary">${SUMMARY_OPTS.map(([v, l]) => `<option value="${v}" ${p.summary === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div></div>` : ''}
+    <label class="opt"><input type="checkbox" data-field="prefs.renewalReminders" ${p.renewalReminders ? 'checked' : ''}> <span><b>Term renewal reminders${info(TIPS.renewalReminders)}</b><div class="fine">A reminder to confirm or update your availability before each organization's new term.</div></span></label>
+    ${p.renewalReminders ? '' : `<div class="notice warn">With reminders off, availability you do not renew pauses automatically when a term starts.</div>`}
+    <div class="form">
+      <div class="field"><label>Visit reminder</label><select data-field="prefs.reminderDays"><option value="1" ${p.reminderDays === 1 ? 'selected' : ''}>1 day before</option><option value="2" ${p.reminderDays === 2 ? 'selected' : ''}>2 days before</option><option value="7" ${p.reminderDays === 7 ? 'selected' : ''}>7 days before</option><option value="0" ${!p.reminderDays ? 'selected' : ''}>No optional reminder</option></select></div>
+      <div class="field"><label>Attendance questions go to${info(TIPS.attendanceTo)}</label><select data-field="prefs.attendanceTo"><option value="physician" ${p.attendanceTo === 'physician' ? 'selected' : ''}>Me</option><option value="scheduling" ${p.attendanceTo === 'scheduling' ? 'selected' : ''}>The location's scheduling coordinator</option></select></div>
+    </div>`;
+}
+/* Shared field set: the portal wraps it in a form; onboarding embeds it. */
+function ruleFields(r, d) {
+  const F = (k, inner) => `<div class="field"><label for="rf-${k}">${inner}</label>`;
+  const locs = ((d && d.locations) || []).filter(l => !PUI.locScope || PUI.locScope.includes(l.id)); const orgs = (d && d.orgs) || [];
+  return `
+    ${orgs.length ? `${F('org', 'Applies to' + info(TIPS.applies))}<select id="rf-org" data-rf="org"><option value="" ${!r.org ? 'selected' : ''}>Shared availability (every organization)</option>${orgs.map(o => `<option value="${esc(o.slug)}" ${r.org === o.slug ? 'selected' : ''}>${esc(o.org)} only</option>`).join('')}</select></div>` : ''}
+    ${locs.length > 1 ? `${F('loc', 'Location' + info(TIPS.location))}<select id="rf-loc" data-rf="locationId">${locs.map(l => `<option value="${l.id}" ${r.locationId === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select></div>` : ''}
+    ${F('repeat', 'Repeat')}<select id="rf-repeat" data-rf="repeat"><option value="daily" ${r.repeat === 'daily' ? 'selected' : ''}>Daily</option><option value="weekly" ${r.repeat === 'weekly' ? 'selected' : ''}>Weekly</option><option value="every_2_weeks" ${r.repeat === 'every_2_weeks' ? 'selected' : ''}>Every 2 weeks</option><option value="monthly" ${r.repeat === 'monthly' ? 'selected' : ''}>Monthly</option></select></div>
+    ${r.repeat === 'monthly' ? `${F('nth', 'Which')}<select id="rf-nth" data-rf="nth">${[1, 2, 3, 4, 5].map(n => `<option value="${n}" ${r.nth === n ? 'selected' : ''}>${NTH[n]}</option>`).join('')}</select></div>` : ''}
+    ${r.repeat !== 'daily' ? `${F('weekday', 'Day')}<select id="rf-weekday" data-rf="weekday">${WDL.map((w, i) => `<option value="${i}" ${i === r.weekday ? 'selected' : ''}>${w}</option>`).join('')}</select></div>` : ''}
+    ${F('start', 'Start')}<input id="rf-start" type="time" data-rf="start" value="${r.start}"></div>
+    ${F('end', 'End')}<input id="rf-end" type="time" data-rf="end" value="${r.end}"></div>
+    ${F('from', 'Starting (optional)')}<input id="rf-from" type="date" data-rf="from" value="${r.from || ''}"></div>
+    ${F('until', 'Until (optional)')}<input id="rf-until" type="date" data-rf="until" value="${r.until || ''}"></div>
+    ${F('lead', 'Minimum notice (days)' + info(TIPS.notice))}<input id="rf-lead" type="number" min="0" data-rf="lead" value="${r.lead}"></div>
+    ${F('horizon', HORIZON_LABEL + info(HORIZON_TIP))}<input id="rf-horizon" type="number" min="1" data-rf="horizon" value="${r.horizon}"></div>
+    ${F('cap', 'Students per visit' + info(TIPS.cap))}<input id="rf-cap" type="number" min="1" max="${CAP_MAX}" data-rf="cap" value="${r.cap}"></div>`;
+}
+function ruleForm(d) {
+  const r = PUI.ruleDraft;
+  return `<form class="form" data-action="ruleSubmit" data-id="${d.id}">${ruleFields(r, d)}
+    <div class="field full row"><button class="btn primary" type="submit">${r.id ? 'Save rule' : 'Add rule'}</button><button class="btn" type="button" data-action="ruleFormClose">Cancel</button></div></form>`;
+}
+function dateFields(m, d) {
+  const F = (k, inner) => `<div class="field"><label for="df-${k}">${inner}</label>`; const locs = ((d && d.locations) || []).filter(l => !PUI.locScope || PUI.locScope.includes(l.id)); const orgs = (d && d.orgs) || [];
+  return `
+    ${orgs.length ? `${F('org', 'Applies to' + info(TIPS.applies))}<select id="df-org" data-df="org"><option value="" ${!m.org ? 'selected' : ''}>Shared availability (every organization)</option>${orgs.map(o => `<option value="${esc(o.slug)}" ${m.org === o.slug ? 'selected' : ''}>${esc(o.org)} only</option>`).join('')}</select></div>` : ''}
+    ${locs.length > 1 ? `${F('loc', 'Location' + info(TIPS.location))}<select id="df-loc" data-df="locationId">${locs.map(l => `<option value="${l.id}" ${m.locationId === l.id ? 'selected' : ''}>${esc(l.name)}</option>`).join('')}</select></div>` : ''}
+    ${F('date', 'Date')}<input id="df-date" type="date" data-df="date" value="${m.date}" min="${TODAY_ISO}"></div>
+    ${F('start', 'Start')}<input id="df-start" type="time" data-df="start" value="${m.start}"></div>
+    ${F('end', 'End')}<input id="df-end" type="time" data-df="end" value="${m.end}"></div>
+    ${F('lead', 'Minimum notice (days)' + info(TIPS.notice))}<input id="df-lead" type="number" min="0" data-df="lead" value="${m.lead}"></div>
+    ${F('horizon', HORIZON_LABEL + info(HORIZON_TIP))}<input id="df-horizon" type="number" min="1" data-df="horizon" value="${m.horizon}"></div>
+    ${F('cap', 'Students per visit' + info(TIPS.cap))}<input id="df-cap" type="number" min="1" max="${CAP_MAX}" data-df="cap" value="${m.cap}"></div>`;
+}
+function dateForm(d) {
+  const m = PUI.dateDraft;
+  return `<form class="form" data-action="dateSubmit" data-id="${d.id}">${dateFields(m, d)}
+    <div class="field full row"><button class="btn primary" type="submit">${m.id ? 'Save date' : 'Add date'}</button><button class="btn" type="button" data-action="dateFormClose">Cancel</button></div></form>`;
+}
+/* scope (coordinator view): { locationIds, forms }. Slots at other locations show only as Busy; rules there have no controls. */
+function calendar(d, ro, scope) {
+  const m = PUI.calMonth; const y = m.getFullYear(), mo = m.getMonth();
+  const slots = slotsFor(d).filter(s => s.month === mo && s.year === y); const multi = (d.locations || []).length > 1;
+  const other = x => !!scope && !scope.locationIds.includes(x.locationId || loc(d).id); const noForms = ro || (scope && scope.forms === false);
+  const firstDow = new Date(y, mo, 1).getDay(); const days = new Date(y, mo + 1, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < firstDow; i++) cells.push('<div class="day off"></div>');
+  for (let day = 1; day <= days; day++) {
+    const dIso = iso(new Date(y, mo, day)); const evs = slots.filter(s => s.iso === dIso);
+    cells.push(`<div class="day ${dIso === TODAY_ISO ? 'today' : ''} ${dIso < TODAY_ISO ? 'off' : ''}"><span class="n">${day}</span>${evs.map(s => {
+      if (other(s)) return `<span class="ev other" title="${span(s.start, s.end)} · ${esc(loc(d, s).name)}">Busy</span>`;
+      const cls = s.confirmed.length ? 'booked' : s.queue.length ? 'req' : ''; const sel = PUI.calSel === s.key ? 'sel' : '';
+      const label = s.confirmed.length ? (s.confirmed.length > 1 ? s.confirmed.length + ' students' : first(stu(s.confirmed[0].studentId).name)) : s.queue.length ? s.queue.length + ' request' + (s.queue.length > 1 ? 's' : '') : t12(s.start).replace(':00', '');
+      return `<button class="ev ${cls} ${sel}" data-action="calSel" data-key="${s.key}" title="${span(s.start, s.end)}">${esc(label)}</button>`; }).join('')}</div>`);
+  }
+  const sel = PUI.calSel ? slotsFor(d).find(s => s.key === PUI.calSel) : null;
+  return `
+  <div class="head"><div class="row"><button class="btn sm" data-action="calPrev">‹</button><b>${MOL[mo]} ${y}</b><button class="btn sm" data-action="calNext">›</button></div>
+    <div class="row"><span class="chip acc">Open</span><span class="chip good">Booked</span><span class="chip warn">Requested</span></div></div>
+  <div class="cal">${WD.map(w => `<div class="dow">${w}</div>`).join('')}${cells.join('')}</div>
+  ${sel ? `<div class="notice stack" style="gap:6px"><div><b>${fmtLong(sel.iso)}</b> · ${span(sel.start, sel.end)}${multi ? ' · ' + esc(loc(d, sel).name) : ''}${orgOnlyText(d, sel.org)} · ${sel.cap > 1 ? sel.seatsLeft + ' of ' + sel.cap + ' seats open' : (sel.confirmed.length ? 'booked' : 'open')} · ${sel.lead}-day notice${sel.confirmed.length ? ' · ' + sel.confirmed.map(b => esc(stu(b.studentId).name)).join(', ') + ' confirmed' : ''}${sel.queue.length ? ' · ' + sel.queue.length + ' request' + (sel.queue.length > 1 ? 's' : '') + ' in line (' + esc(stu(sel.queue[0].studentId).name) + ' first)' : ''}</div>
+    <div class="row">${ro ? '' : `${sel.confirmed.map(b => `<button class="btn sm danger" data-action="calCancelBooking" data-id="${b.id}">Cancel ${esc(first(stu(b.studentId).name).split(' ')[0])}'s visit</button>`).join('')}${sel.confirmed.length ? '' : `<button class="btn sm danger" data-action="calRemove" data-key="${sel.key}">Remove this date</button>${info(TIPS.remove)}`}`}<button class="btn sm" data-action="calUnsel">Close</button></div></div>` : ''}
+  ${noForms ? '' : `<div class="row">
+    <button class="btn sm" data-action="toggleRuleForm">${PUI.showRuleForm ? 'Hide' : '+ Recurring availability'}</button>${info(TIPS.recurring)}
+    <button class="btn sm" data-action="toggleDateForm">${PUI.showDateForm ? 'Hide' : '+ Individual date'}</button>${info(TIPS.individual)}
+  </div>`}
+  ${PUI.showRuleForm && !noForms ? ruleForm(d) : ''}
+  ${PUI.showDateForm && !noForms ? dateForm(d) : ''}
+  <div class="stack" style="gap:6px"><h4>Recurring rules</h4>${d.rules.filter(r => orgSees(d, r.org)).map(r => `<div class="head"><span style="flex:1 1 auto">${esc(ruleText(r))}${multi ? ' · ' + esc(locOf(d, r.locationId).name) : ''}${orgOnlyText(d, r.org)}${r.from && r.from > TODAY_ISO ? ' · from ' + fmt(r.from) : ''}${r.until ? ' · until ' + fmt(r.until) : ''}${other(r) ? ' <span class="fine">· other location</span>' : ''}</span>${noForms || other(r) ? '' : `<span class="row" style="gap:6px;flex:0 0 auto"><button class="btn sm" data-action="ruleEdit" data-id="${d.id}" data-rule="${r.id}">Edit</button><button class="btn sm danger" data-action="ruleDel" data-id="${d.id}" data-rule="${r.id}">Remove</button></span>`}</div>`).join('') || '<p class="fine">None</p>'}
+  ${d.manual.some(mm => orgSees(d, mm.org)) ? `<h4>Individual dates</h4>${d.manual.filter(mm => orgSees(d, mm.org)).map(mm => `<div class="head"><span style="flex:1 1 auto">${fmtY(mm.date)} · ${span(mm.start, mm.end)}${multi ? ' · ' + esc(locOf(d, mm.locationId).name) : ''}${orgOnlyText(d, mm.org)} · ${mm.lead || 0}-day notice${other(mm) ? ' <span class="fine">· other location</span>' : ''}</span>${noForms || other(mm) ? '' : `<span class="row" style="gap:6px;flex:0 0 auto"><button class="btn sm" data-action="manualEdit" data-id="${d.id}" data-m="${mm.id}">Edit</button><button class="btn sm danger" data-action="manualDel" data-id="${d.id}" data-m="${mm.id}">Remove</button></span>`}</div>`).join('')}` : ''}</div>`;
+}
+/* Site paperwork editor for one practice location. */
+function paperworkEdit(l) {
+  const p = l.paperwork;
+  return `<div class="field full"><label>Site paperwork${info(TIPS.paperwork)}</label>
+    <div class="seg" style="margin-bottom:6px"><button type="button" data-action="paperMode" data-loc="${l.id || 'draft'}" data-mode="none" class="${p.mode === 'none' ? 'on' : ''}">None</button><button type="button" data-action="paperMode" data-loc="${l.id || 'draft'}" data-mode="some" class="${p.mode !== 'none' ? 'on' : ''}">Required</button></div>
+    ${p.mode !== 'none' ? `<textarea data-field="paperStatement" data-loc="${l.id || 'draft'}" placeholder="What to complete, where to send it, how far ahead">${esc(p.statement || '')}</textarea>
+    <input data-field="paperLink" data-loc="${l.id || 'draft'}" placeholder="Link (https://)" value="${esc((p.links[0] || {}).url || '')}" style="margin-top:6px">
+    <div class="upload" style="margin-top:6px">${(p.files || []).map(f => `<span class="chip">⬇ ${esc(f)}</span>`).join(' ')} ${(p.files || []).length ? '<br>' : ''}Drop PDFs here or <label class="link" style="cursor:pointer">choose files<input type="file" multiple accept=".pdf,.doc,.docx" data-action="paperFiles" data-loc="${l.id || 'draft'}" hidden></label></div>` : ''}</div>`;
+}
+/* Practice-location fields (portal edit and onboarding share them). */
+function locationFields(l, opt) {
+  const id = l.id || 'draft'; opt = opt || {}; const F = (k, label, extra) => `<div class="field ${extra || ''}"><label for="lf-${k}">${label}</label>`;
+  const I = (k, ph, type) => `<input id="lf-${k}" type="${type || 'text'}" data-field="${k}" data-loc="${id}" value="${esc(l[k] || '')}" placeholder="${ph || ''}"></div>`;
+  return `
+    ${F('name', 'Practice or hospital', 'full')}${I('name', 'Madison Anesthesia Group')}
+    ${F('address', 'Street address')}${I('address', '240 N 2nd E')}
+    ${F('city', 'City')}${I('city')}
+    ${F('state', 'State')}${I('state')}
+    ${F('zip', 'ZIP')}${I('zip', '83440')}
+    ${F('meet', 'Where the student should go on arrival', 'full')}${I('meet', 'Surgical check-in desk, ask for the charge nurse')}
+    ${F('parking', 'Parking')}${I('parking', 'Visitor lot')}
+    ${F('dayof', 'Day-of contact' + info('Who the student should call if something goes wrong on the day. Shared only in their confirmation email, never on your public card.'))}${I('dayof', 'Office manager, 208-555-0100')}
+    <div class="field full"><label for="lf-reqs">Before the student comes (one per line)</label><textarea id="lf-reqs" data-field="reqs" data-loc="${id}" placeholder="Business casual, closed-toe shoes&#10;Arrive 15 minutes early">${esc((l.reqs || []).join('\n'))}</textarea></div>
+    ${paperworkEdit(l)}
+    ${opt.invite ? `<div class="field full"><label>Invite a scheduling coordinator for this location (optional)${info(TIPS.coordinator)}</label><div class="form" style="margin-top:4px"><div class="field"><input data-field="coordName" data-loc="${id}" value="${esc(l.coordName || '')}" placeholder="Name"></div><div class="field"><input type="email" data-field="coordEmail" data-loc="${id}" value="${esc(l.coordEmail || '')}" placeholder="office@practice.com"></div><div class="field full"><label class="opt"><input type="checkbox" data-field="coordApprove" data-loc="${id}" ${l.coordApprove ? 'checked' : ''}> They may approve student requests for me</label></div></div></div>` : ''}`;
+}
+function locationCard(d, l, ro, opt) {
+  opt = opt || {};
+  return `<div class="item stack" style="gap:6px"><div class="head"><div><b>${esc(l.name)}</b>${l.isDefault ? ' <span class="chip acc">Default</span>' : ''}<div class="fine">${esc(fullAddress(l))}</div></div>${ro ? '' : `<div class="row" style="gap:6px">${l.isDefault || opt.lite ? '' : `<button class="btn sm" data-action="locDefault" data-id="${d.id}" data-loc="${l.id}">Make default</button>`}<button class="btn sm" data-action="locEdit" data-id="${d.id}" data-loc="${l.id}">Edit</button>${(d.locations || []).length > 1 && !opt.lite ? `<button class="btn sm danger" data-action="locDel" data-id="${d.id}" data-loc="${l.id}">Remove</button>` : ''}</div>`}</div>
+    <dl class="kv"><dt>Meet at</dt><dd>${esc(l.meet)}</dd><dt>Parking</dt><dd>${esc(l.parking)}</dd><dt>Day-of contact</dt><dd>${esc(l.dayof)}</dd><dt>Before they come</dt><dd>${(l.reqs || []).map(esc).join('<br>') || '—'}</dd><dt>Site paperwork</dt><dd>${l.paperwork.mode === 'none' ? 'None' : esc(l.paperwork.statement || '') + ((l.paperwork.links || []).length ? '<br>' + l.paperwork.links.map(x => `<a href="${esc(x.url)}">${esc(x.label || x.url)}</a>`).join(', ') : '') + ((l.paperwork.files || []).length ? '<br>' + l.paperwork.files.map(f => '⬇ ' + esc(f)).join(', ') : '')}</dd></dl>
+    ${coordBlock(d, l, ro || opt.lite)}</div>`;
+}
+/* Scheduling coordinators at one location: who, what they may do, invite and remove. */
+function coordBlock(d, l, ro) {
+  const list = DB.coordinators.flatMap(c => c.auth.filter(a => a.doctorId === d.id && a.locationIds.includes(l.id) && a.status !== 'removed').map(a => ({ c, a })));
+  const inv = PUI.coordInvite === l.id;
+  return `<div class="stack" style="gap:6px"><div class="row"><h4 style="margin:0">Scheduling coordinators</h4>${ro ? '' : info(TIPS.coordinator)}</div>
+    ${list.map(({ c, a }) => `<div class="head item"><div><b>${esc(c.name)}</b> <span class="fine">${esc(c.email)}</span><div class="fine">${a.status === 'invited' ? 'Invited · not yet accepted' : 'Since ' + fmtY(a.since)} · ${a.approve ? 'may approve student requests' : 'does not approve requests'} · ${attendanceDelegated(d) ? 'answers attendance questions (your email preference)' : 'attendance questions come to you'}</div></div>${ro ? '' : `<div class="row" style="gap:6px"><button class="btn sm" data-action="coordApprove" data-id="${d.id}" data-coord="${c.id}">${a.approve ? 'Stop approving' : 'Let them approve'}</button><button class="btn sm danger" data-action="coordRemove" data-id="${d.id}" data-coord="${c.id}" data-loc="${l.id}">Remove</button></div>`}</div>`).join('') || `<p class="fine">${ro ? 'None' : 'None yet. Confirmations, reminders and attendance questions come to you until you invite one.'}</p>`}
+    ${ro ? '' : inv ? `<form class="form" data-action="coordInviteSubmit" data-id="${d.id}" data-loc="${l.id}"><div class="field"><label for="ci-name">Name</label><input id="ci-name" placeholder="Office manager"></div><div class="field"><label for="ci-email">Email</label><input id="ci-email" type="email" placeholder="office@practice.com" required></div><div class="field full"><label class="opt"><input type="checkbox" id="ci-approve"> They may approve student requests for me</label></div><div class="field full row"><button class="btn sm primary" type="submit">Send invitation</button><button class="btn sm" type="button" data-action="coordInviteCancel">Cancel</button></div></form>` : `<div><button class="btn sm" data-action="coordInvite" data-loc="${l.id}">+ Invite a coordinator</button></div>`}</div>`;
+}
+/* Setup checklist: what a physician still has to finish before students can book. Email and profile are never skippable, so they are done by the time a portal exists. */
+function setupItems(d) {
+  return [
+    { k: 'email', label: 'Verify your professional email', done: true },
+    { k: 'profile', label: 'Create your professional profile', done: !!(d.first && d.last && d.specialty && (d.credentials || [])[0]) },
+    { k: 'location', label: 'Add a practice location', done: (d.locations || []).length > 0, why: 'Required before offering shadowing visits', view: 'profile' },
+    { k: 'shadow', label: 'Set your shadowing preferences', done: !(d.orgs || []).some(o => o.prefsSet === false), why: 'Required before offering shadowing visits', view: 'orgs' }
+  ];
+}
+const setupIncomplete = d => setupItems(d).some(i => !i.done);
+function setupChecklist(d, nav) {
+  const items = setupItems(d); const done = items.filter(i => i.done).length;
+  return `<section class="card stack" style="gap:10px"><div class="head"><h3>Finish setting up shadowing</h3><span class="chip ${done === items.length ? 'good' : 'warn'}">${done} of ${items.length} complete</span></div>
+    <div class="bar"><span style="width:${Math.round(done / items.length * 100)}%"></span></div>
+    <div class="checks">${items.map(i => `<div class="check ${i.done ? 'done' : ''}"><span class="dot">${i.done ? '✓' : ''}</span><div><b>${i.label}</b><div class="fine">${i.done ? 'Completed' : i.why}</div></div>${!i.done && nav && i.view ? `<button class="btn sm" data-action="go" data-view="${i.view}">Finish</button>` : ''}</div>`).join('')}</div>
+    <p class="fine">Your profile is saved. Students won't be able to book shadowing visits until your required setup is complete and you've added availability.</p></section>`;
+}
+/* Structured name fields shared by the portal and onboarding. `p` is the record (physician or student); creds adds the credential editor. */
+function nameFields(p, creds) {
+  const F = (k, label, extra) => `<div class="field ${extra || ''}"><label for="nf-${k}">${label}</label>`;
+  return `
+    ${F('first', 'First name')}<input id="nf-first" data-field="first" value="${esc(p.first || '')}" required></div>
+    ${F('last', 'Last name')}<input id="nf-last" data-field="last" value="${esc(p.last || '')}" required></div>
+    ${F('suffix', 'Suffix (optional)')}<input id="nf-suffix" data-field="suffix" value="${esc(p.suffix || '')}" placeholder="Jr., III"></div>
+    ${F('display', 'Preferred display name (optional)' + info('Shown instead of your first and last name, for example "Dr. Ellie Marsh". Your verified name stays on the account.'))}<input id="nf-display" data-field="display" value="${esc(p.display || '')}" placeholder="${esc([p.first, p.last].filter(Boolean).join(' ') || 'As you like to be addressed')}"></div>
+    ${creds ? `<div class="field full"><label>Credentials${info('Your primary credential, then any others in the order they should appear. Shown after your name: ' + esc(fullName(p)) + '.')}</label>
+      <div class="row" style="gap:6px;align-items:center">
+        <select data-field="credential.0" style="width:auto;min-width:90px"><option ${(p.credentials || [])[0] === 'MD' ? 'selected' : ''}>MD</option><option ${(p.credentials || [])[0] === 'DO' ? 'selected' : ''}>DO</option></select>
+        ${(p.credentials || []).slice(1).map((c, i) => `<span class="row" style="gap:4px;flex-wrap:nowrap"><input data-field="credential.${i + 1}" value="${esc(c)}" placeholder="MPH" style="width:110px"><button class="btn sm" type="button" data-action="credDel" data-i="${i + 1}" aria-label="Remove credential">✕</button></span>`).join('')}
+        <button class="btn sm" type="button" data-action="credAdd">+ Add credential</button>
+      </div></div>` : ''}`;
+}
+/* Read-only view of one physician for an organization's administrators. Only Pause and Resume act. */
+function vAdminPhysician(d) {
+  const up = confirmedUpcoming(d); const reqs = DB.bookings.filter(b => b.doctorId === d.id && inQueue(b)).sort((a, b) => (a.date + (a.queuePos || 0)) < (b.date + (b.queuePos || 0)) ? -1 : 1);
+  const hist = DB.bookings.filter(b => b.doctorId === d.id && (b.status === 'completed' || b.status === 'noshow')).sort((a, b) => a.date < b.date ? 1 : -1);
+  const waitN = DB.waitlist.filter(w => w.doctorId === d.id && w.status === 'waiting').length; const o = link(d);
+  const TABS = [['profile', 'Profile'], ['locations', 'Locations'], ['availability', 'Availability'], ['students', 'Students'], ['blocked', 'Blocked'], ['activity', 'Activity']];
+  const tab = PUI.adminTab || 'profile';
+  const body = {
+    profile: () => `<h3>Profile</h3>
+    <dl class="kv"><dt>Email</dt><dd>${esc(d.email)}</dd><dt>Attendance questions</dt><dd>${d.prefs.attendanceTo === 'physician' ? 'Physician' : 'Scheduling coordinator'}</dd><dt>Coordinators</dt><dd>${coordsFor(d).map(c => esc(c.name)).join(', ') || 'None'}</dd><dt>Reminder</dt><dd>${d.prefs.reminderDays ? d.prefs.reminderDays + ' days before' : 'None'}</dd><dt>Summary email</dt><dd>${(s => s[0].toUpperCase() + s.slice(1))(summaryText(d.prefs))}</dd><dt>For ${esc(CFG.org)}</dt><dd>${esc(o.years)} · ${o.approveEach ? 'approves each student' : 'confirms automatically'} · ${o.availability === 'shared' ? 'shared availability' : 'own availability'} · connected ${fmtY(o.since)}</dd><dt>Bio</dt><dd>${d.bio ? esc(d.bio) : '<span class="fine">None</span>'}</dd><dt>Joined</dt><dd>${esc(d.submittedBy)}${d.submittedByName ? ' (' + esc(d.submittedByName) + ')' : ''} · ${fmtY(d.submittedOn)}</dd></dl>`,
+    locations: () => `<h3>Practice locations</h3>${(d.locations || []).map(l => locationCard(d, l, true)).join('')}`,
+    availability: () => `<h3>Availability</h3>${calendar(d, true)}`,
+    students: () => `<h3>Students</h3>
+    <h4>Upcoming</h4>
+    ${up.map(b => `<div class="head item"><div><b>${fmtLong(b.date)}</b> · ${span(b.start, b.end)}<div class="fine">${esc(stu(b.studentId).name)}, ${esc(stu(b.studentId).year)} · ${esc(loc(d, b).name)}</div></div>${bookingChip(b)}</div>`).join('') || '<p class="fine">Nothing confirmed</p>'}
+    ${reqs.length ? `<h4>Requests in line</h4>${reqs.map(b => `<div class="head item"><div><b>${fmtLong(b.date)}</b> · ${span(b.start, b.end)}<div class="fine">${esc(stu(b.studentId).name)}, ${esc(stu(b.studentId).year)} · #${b.queuePos || 1} in line</div></div>${bookingChip(b)}</div>`).join('')}` : ''}
+    <h4>History</h4>
+    <div class="tw"><table><thead><tr><th>Date</th><th>Student</th><th>Hours</th><th>Status</th></tr></thead><tbody>${hist.map(b => { const s = stu(b.studentId); return `<tr><td class="num">${fmtY(b.date)}</td><td>${esc(s.name)}<div class="fine">${esc(s.year)}</div></td><td class="num">${b.hours ? b.hours.toFixed(1) : '—'}</td><td>${bookingChip(b)}${d.blocks.includes(s.id) ? ' <span class="chip bad">Blocked</span>' : ''}</td></tr>`; }).join('') || '<tr><td colspan="4" class="fine">No visits yet</td></tr>'}</tbody></table></div>`,
+    blocked: () => `<h3>Blocked students</h3>${d.blocks.map(id => `<div class="item">${esc(stu(id).name)}<div class="fine">Hidden from this student's view. They have not been told.</div></div>`).join('') || '<p class="fine">None</p>'}`,
+    activity: () => `<h3>Recent activity</h3><div class="act">${d.activity.slice(0, 50).map(x => `<span class="w">${esc(x.at)} · ${esc(x.who)}</span><span>${esc(x.what)}</span>`).join('')}</div>`
+  };
+  return `
+  <button class="backlink" data-action="adminProfileClose">← Physicians</button>
+  <section class="card stack">
+    <div class="head"><div class="phead">${avatarHtml(d, 'lg')}<div><h2>${esc(d.name)}</h2><div class="fine">${esc(d.specialty)} · ${esc(siteLine(d, ', '))}</div></div></div>
+      <div class="row">${docChip(d)}${waitN ? `<span class="chip acc">${waitN} waitlisted</span>` : ''}${d.status === 'active' ? `<button class="btn sm" data-action="pauseForm" data-id="${d.id}">Pause</button>` : d.status === 'paused' ? `<button class="btn sm primary" data-action="resume" data-id="${d.id}">Resume</button>` : ''}</div></div>
+    <div class="tiles"><div class="tile"><div class="v num">${DB.bookings.filter(b => b.doctorId === d.id && b.hoursStatus === 'confirmed').reduce((a, b) => a + b.hours, 0).toFixed(1)}</div><div class="l">Confirmed hours hosted</div></div><div class="tile"><div class="v num">${DB.bookings.filter(b => b.doctorId === d.id && b.status === 'completed').length}</div><div class="l">Visits completed</div></div><div class="tile"><div class="v num">${bookable(d).length}</div><div class="l">Open dates</div></div><div class="tile"><div class="v num">${d.blocks.length}</div><div class="l">Students blocked</div></div></div>
+    <div class="seg viewseg" style="max-width:none" role="tablist">${TABS.map(([k, l]) => `<button type="button" role="tab" aria-selected="${k === tab}" data-action="docTab" data-tab="${k}" class="${k === tab ? 'on' : ''}">${l}</button>`).join('')}</div>
+  </section>
+  <section class="card stack">${(body[tab] || body.profile)()}</section>`;
+}
+/* While a location is being edited, its fields point at the draft, not the saved record. */
+const findLoc = (d, id) => (PUI.locDraft && (id === 'draft' || PUI.locDraft.id === id)) ? PUI.locDraft : (d.locations || []).find(l => l.id === id);
+/* Returns true when the click was a shared action (caller re-renders). */
+function profileClick(a, el, d, actorName) {
+  const id = el.dataset.id;
+  switch (a) {
+    case 'calPrev': PUI.calMonth = new Date(PUI.calMonth.getFullYear(), PUI.calMonth.getMonth() - 1, 1); PUI.calSel = null; return true;
+    case 'calNext': PUI.calMonth = new Date(PUI.calMonth.getFullYear(), PUI.calMonth.getMonth() + 1, 1); PUI.calSel = null; return true;
+    case 'calSel': PUI.calSel = PUI.calSel === el.dataset.key ? null : el.dataset.key; return true;
+    case 'calUnsel': PUI.calSel = null; return true;
+    case 'docTab': PUI.adminTab = el.dataset.tab; PUI.calSel = null; return true;
+    case 'coordInvite': PUI.coordInvite = el.dataset.loc; return true;
+    case 'coordInviteCancel': PUI.coordInvite = null; return true;
+    case 'coordApprove': { const c = coord(el.dataset.coord); const a = authFor(c, d); a.approve = !a.approve; logActivity(d, actorName, (a.approve ? 'Let ' : 'Stopped ') + c.name + (a.approve ? ' approve student requests' : ' approving student requests')); toast('Saved. ' + c.name + ' has been emailed.'); return true; }
+    case 'coordRemove': { const c = coord(el.dataset.coord); const a = authFor(c, d); const l = findLoc(d, el.dataset.loc); confirmAction('Remove ' + c.name + ' from ' + l.name + '?', 'They lose access to this location in their coordinator portal and stop receiving its scheduling emails. Nothing else changes.', 'Remove coordinator', () => { a.locationIds = a.locationIds.filter(x => x !== l.id); if (!a.locationIds.length) a.status = 'removed'; logActivity(d, actorName, 'Removed coordinator ' + c.name + ' from ' + l.name); toast(c.name + ' removed.'); }); return false; }
+    case 'credAdd': d.credentials = [...(d.credentials || ['MD']), '']; return true;
+    case 'credDel': { d.credentials = (d.credentials || []).filter((x, i) => i !== Number(el.dataset.i)); syncName(d); if (d.activity) logActivity(d, actorName, 'Edited credentials'); return true; }
+    case 'profSec': PUI.profSec[el.dataset.sec] = !PUI.profSec[el.dataset.sec]; return true;
+    case 'calRemove': { const [date, start] = el.dataset.key.split('|'); confirmAction('Remove ' + fmtLong(date) + '?', 'This open date disappears for students. Dates already booked are not affected.', 'Remove date', () => { const mi = d.manual.findIndex(m => m.date === date && m.start === start); if (mi >= 0) d.manual.splice(mi, 1); else d.removed.push(el.dataset.key); logActivity(d, actorName, 'Removed ' + fmt(date) + ' ' + t12(start)); PUI.calSel = null; toast('Date removed.'); }); return false; }
+    case 'calCancelBooking': { const b = DB.bookings.find(x => x.id === id); confirmAction('Cancel this visit?', esc(stu(b.studentId).name) + ' is booked for ' + fmtLong(b.date) + '. They will be emailed, and the date reopens for other students.', 'Cancel visit', () => { cancelBooking(b, actorName === 'Admin' ? 'admin' : 'physician', actorName); PUI.calSel = null; toast('Visit cancelled. ' + stu(b.studentId).name + ' has been notified.'); }); return false; }
+    case 'toggleRuleForm': PUI.showRuleForm = !PUI.showRuleForm; PUI.ruleDraft = PUI.showRuleForm ? blankRule(d) : null; return true;
+    case 'toggleDateForm': PUI.showDateForm = !PUI.showDateForm; PUI.dateDraft = PUI.showDateForm ? blankDate(d) : null; return true;
+    case 'ruleFormClose': PUI.showRuleForm = false; PUI.ruleDraft = null; return true;
+    case 'dateFormClose': PUI.showDateForm = false; PUI.dateDraft = null; return true;
+    case 'ruleEdit': { const r = d.rules.find(x => x.id === el.dataset.rule); PUI.ruleDraft = { ...r }; PUI.showRuleForm = true; return true; }
+    case 'manualEdit': { const mm = d.manual.find(x => x.id === el.dataset.m); PUI.dateDraft = { ...mm }; PUI.showDateForm = true; return true; }
+    case 'ruleDel': { const r = d.rules.find(x => x.id === el.dataset.rule); confirmAction('Remove this rule?', esc(ruleText(r)) + ' will stop generating dates. Dates already booked are unchanged.', 'Remove rule', () => { d.rules = d.rules.filter(x => x.id !== el.dataset.rule); logActivity(d, actorName, 'Removed a recurring rule'); toast('Rule removed. Booked dates are unchanged.'); }); return false; }
+    case 'manualDel': { const mm = d.manual.find(x => x.id === el.dataset.m); confirmAction('Remove ' + fmtLong(mm.date) + '?', 'This date disappears for students.', 'Remove date', () => { d.manual = d.manual.filter(x => x.id !== el.dataset.m); logActivity(d, actorName, 'Removed ' + fmt(mm.date)); toast('Date removed.'); }); return false; }
+    case 'paperMode': { const l = findLoc(d, el.dataset.loc); if (!l) return false; l.paperwork.mode = el.dataset.mode === 'none' ? 'none' : (l.paperwork.mode === 'none' ? 'statement' : l.paperwork.mode); return true; }
+    case 'locEdit': { const l = findLoc(d, el.dataset.loc); PUI.locDraft = JSON.parse(JSON.stringify(l)); return true; }
+    case 'locAdd': PUI.locDraft = blankLoc(); return true;
+    case 'locCancel': PUI.locDraft = null; return true;
+    case 'locDefault': { (d.locations || []).forEach(l => { l.isDefault = l.id === el.dataset.loc; }); logActivity(d, actorName, 'Made ' + findLoc(d, el.dataset.loc).name + ' the default location'); toast('Default location saved.'); return true; }
+    case 'locDel': { const l = findLoc(d, el.dataset.loc); const used = d.rules.some(r => r.locationId === l.id) || d.manual.some(m => m.locationId === l.id); if (used) { toast('Move or remove the availability at this location first.'); return false; } confirmAction('Remove ' + l.name + '?', 'Past visits keep their address. Nothing else refers to this location.', 'Remove location', () => { d.locations = d.locations.filter(x => x.id !== l.id); if (!d.locations.some(x => x.isDefault)) d.locations[0].isDefault = true; logActivity(d, actorName, 'Removed location ' + l.name); toast('Location removed.'); }); return false; }
+    case 'block': { const sid = el.dataset.student; confirmAction('Block ' + stu(sid).name + '?', 'They will no longer see your profile or be able to book. They are not told. Visits already confirmed stay unless cancelled.', 'Block student', () => { if (!d.blocks.includes(sid)) d.blocks.push(sid); logActivity(d, actorName, 'Blocked ' + stu(sid).name); toast(stu(sid).name + ' will no longer see your profile.'); }); return false; }
+    case 'unblock': { const sid = el.dataset.student; d.blocks = d.blocks.filter(x => x !== sid); logActivity(d, actorName, 'Unblocked ' + stu(sid).name); toast('Unblocked.'); return true; }
+    case 'pauseForm': pauseDialog(d, actorName); return false;
+    case 'resume': d.status = 'active'; d.pausedUntil = null; logActivity(d, actorName, 'Resumed availability'); toast('Accepting bookings again.'); return true;
+    case 'renewProfile': { const t = nextTerm(); d.renewed = t ? t.name : d.renewed; logActivity(d, actorName, 'Renewed availability for ' + (t ? t.name : 'next term')); toast('Renewed for ' + (t ? t.name : 'next term') + '.'); return true; }
+    case 'approveReq': { const b = DB.bookings.find(x => x.id === id); const s = slotsFor(d).find(x => x.iso === b.date && x.start === b.start); b.status = 'confirmed'; b.seat = s ? s.confirmed.length + 1 : 1; logActivity(d, actorName, 'Approved ' + stu(b.studentId).name + ' for ' + fmt(b.date)); const p = promoteQueue(d, b.date, b.start); toast('Approved. Confirmation sent.' + (p ? ' Next in line: ' + stu(p.studentId).name + '.' : '')); return true; }
+    case 'declineReq': { const b = DB.bookings.find(x => x.id === id); confirmAction('Decline this request?', esc(stu(b.studentId).name) + ' asked for ' + fmtLong(b.date) + '. They will be emailed, cannot request this date again, and can pick another date.', 'Decline', () => { b.status = 'declined'; logActivity(d, actorName, 'Declined request from ' + stu(b.studentId).name + ' for ' + fmt(b.date)); const p = promoteQueue(d, b.date, b.start); toast('Declined.' + (p ? ' Next in line: ' + stu(p.studentId).name + '.' : ' The student can pick another date.')); }); return false; }
+    case 'attendYes': { const b = DB.bookings.find(x => x.id === id); b.hoursStatus = 'confirmed'; logActivity(d, actorName, 'Confirmed attendance for ' + stu(b.studentId).name + ', ' + fmt(b.date)); toast('Attendance confirmed. Hours count for ' + first(stu(b.studentId).name) + '.'); return true; }
+    case 'attendNo': { const b = DB.bookings.find(x => x.id === id); const st = stu(b.studentId); confirmAction('Mark ' + st.name + ' as a no-show?', 'Their logged hours are discarded and their booking access is paused until their leadership reinstates them. They and their leadership are emailed.', 'Mark no-show', () => { b.status = 'noshow'; b.hoursStatus = 'none'; b.hours = null; st.strikes = (st.strikes || 0) + 1; st.blockedAt = TODAY_ISO; logActivity(d, actorName, 'Reported no-show: ' + st.name + ', ' + fmt(b.date)); toast('No-show recorded. ' + st.name + ' and their leadership have been emailed.'); }); return false; }
+    case 'photoPick': { const f = document.getElementById('photoFile'); if (f) f.click(); return false; }
+    case 'photoRemove': d.photo = ''; logActivity(d, actorName, 'Removed photo'); toast('Photo removed.'); return true;
+    case 'orgPause': { const o = d.orgs[Number(el.dataset.i)]; confirmAction('Pause for ' + o.org + '?', 'Students there stop seeing your dates until you resume. Other organizations are unaffected. Visits already booked stay unless cancelled.', 'Pause', () => { o.status = 'paused'; logActivity(d, actorName, 'Paused for ' + o.org); toast('Paused for ' + o.org + '.'); }, false); return false; }
+    case 'orgResume': { const o = d.orgs[Number(el.dataset.i)]; o.status = 'active'; logActivity(d, actorName, 'Resumed for ' + o.org); toast('Resumed for ' + o.org + '.'); return true; }
+  }
+  return false;
+}
+function profileSubmit(a, f, d, actorName) {
+  if (a === 'ruleSubmit') { const r = PUI.ruleDraft; const rule = { id: r.id || nid('r'), locationId: r.locationId || loc(d).id, org: r.org || '', repeat: r.repeat, weekday: Number(r.weekday), nth: Number(r.nth) || 1, start: r.start || '08:00', end: r.end || '12:00', from: r.from || '', until: r.until || '', lead: Number(r.lead) >= 0 ? Number(r.lead) : DEFAULT_LEAD, horizon: Number(r.horizon) || 60, cap: Math.min(CAP_MAX, Math.max(1, Number(r.cap) || 1)), blackout: r.blackout || [] };
+    const i = d.rules.findIndex(x => x.id === rule.id); if (i >= 0) { d.rules[i] = rule; logActivity(d, actorName, 'Changed rule: ' + ruleText(rule)); toast('Rule saved. Booked dates are unchanged.'); } else { d.rules.push(rule); logActivity(d, actorName, 'Added recurring rule: ' + ruleText(rule)); toast('Rule added. Dates generated.'); }
+    PUI.showRuleForm = false; PUI.ruleDraft = null; return true; }
+  if (a === 'dateSubmit') { const m = PUI.dateDraft; if (!m.date) return true; const mm = { id: m.id || nid('m'), locationId: m.locationId || loc(d).id, org: m.org || '', date: m.date, start: m.start || '09:00', end: m.end || '12:00', lead: Number(m.lead) || 0, horizon: Number(m.horizon) || 60, cap: Math.min(CAP_MAX, Math.max(1, Number(m.cap) || 1)) };
+    const i = d.manual.findIndex(x => x.id === mm.id); if (i >= 0) { d.manual[i] = mm; logActivity(d, actorName, 'Changed date ' + fmt(mm.date)); toast('Date saved.'); } else { d.manual.push(mm); logActivity(d, actorName, 'Added date ' + fmt(mm.date)); DB.waitlist.filter(w => w.doctorId === d.id && w.status === 'waiting').forEach(w => { w.status = 'notified'; w.notifiedAt = TODAY_ISO; }); toast('Date added. Waitlisted students notified.'); }
+    PUI.showDateForm = false; PUI.dateDraft = null; PUI.calMonth = new Date(parse(mm.date).getFullYear(), parse(mm.date).getMonth(), 1); return true; }
+  if (a === 'coordInviteSubmit') { const v = i => ((f.querySelector('#' + i) || {}).value || '').trim(); const email = v('ci-email'); if (!email.includes('@')) { toast('Enter the coordinator\'s email.'); return false; }
+    inviteCoordinator(d, f.dataset.loc, v('ci-name'), email, !!(f.querySelector('#ci-approve') || {}).checked, actorName); PUI.coordInvite = null; toast('Invitation sent to ' + email + '.'); return true; }
+  if (a === 'locSubmit') { const l = PUI.locDraft; if (!l || !l.name.trim()) { toast('Give the location a name.'); return false; }
+    if (l.id) { const i = d.locations.findIndex(x => x.id === l.id); d.locations[i] = l; logActivity(d, actorName, 'Updated location ' + l.name); toast('Location saved.'); } else { l.id = nid('loc'); if (!(d.locations || []).length) l.isDefault = true; d.locations = [...(d.locations || []), l]; logActivity(d, actorName, 'Added location ' + l.name); toast('Location added.'); }
+    if (l.coordEmail) { inviteCoordinator(d, l.id, l.coordName, l.coordEmail, !!l.coordApprove, actorName); delete l.coordName; delete l.coordEmail; delete l.coordApprove; }
+    PUI.locDraft = null; return true; }
+  return false;
+}
+/* A physician invites a coordinator to one location: an existing coordinator account gets the authorization, otherwise an invited account is created. */
+function inviteCoordinator(d, locId, name, email, approve, actorName) {
+  let c = DB.coordinators.find(x => x.email.toLowerCase() === email.toLowerCase());
+  if (!c) { const parts = (name || email.split('@')[0]).split(' '); c = syncName({ id: nid('co'), first: parts[0] || '', last: parts.slice(1).join(' '), suffix: '', display: '', email, phone: '', createdAt: TODAY_ISO, auth: [] }); DB.coordinators.push(c); }
+  let a = authFor(c, d); if (!a) { a = { doctorId: d.id, locationIds: [], approve: false, status: 'invited', since: TODAY_ISO, by: 'Invited by ' + first(d.name) }; c.auth.push(a); }
+  if (!a.locationIds.includes(locId)) a.locationIds.push(locId); a.approve = approve; if (a.status === 'removed') a.status = 'invited';
+  if (d.activity) logActivity(d, actorName, 'Invited ' + c.name + ' as scheduling coordinator for ' + locOf(d, locId).name);
+}
+/* Returns 'render', 'none', or false. */
+function profileChange(el, d, actorName) {
+  if (el.dataset.action === 'photoFile') { const file = el.files && el.files[0]; if (!file) return 'none'; const r = new FileReader(); r.onload = () => { d.photo = r.result; if (d.activity) logActivity(d, actorName, 'Updated photo'); toast('Photo updated.'); if (typeof render === 'function') render(); }; r.readAsDataURL(file); return 'none'; }
+  if (el.dataset.action === 'paperFiles') { const l = findLoc(d, el.dataset.loc); if (!l) return 'none'; Array.from(el.files || []).forEach(f => l.paperwork.files.push(f.name)); toast('Attached.'); return 'render'; }
+  if (el.dataset.rf && PUI.ruleDraft) { const k = el.dataset.rf; PUI.ruleDraft[k] = ['weekday', 'nth', 'lead', 'horizon', 'cap'].includes(k) ? Number(el.value) : el.value; return k === 'repeat' ? 'render' : 'none'; }
+  if (el.dataset.df && PUI.dateDraft) { const k = el.dataset.df; PUI.dateDraft[k] = ['lead', 'horizon', 'cap'].includes(k) ? Number(el.value) : el.value; return 'none'; }
+  const f = el.dataset.field; if (!f) return false;
+  const val = el.value;
+  if (el.dataset.org !== undefined && d.orgs) { const o = d.orgs[Number(el.dataset.org)]; if (f === 'approveEach') o.approveEach = val === 'yes'; else o[f] = val; logActivity(d, actorName, 'Changed ' + o.org + ' setting: ' + (f === 'approveEach' ? (o.approveEach ? 'approve each student' : 'confirm automatically') : val)); toast('Saved for ' + o.org + '.'); return 'none'; }
+  if (el.dataset.loc !== undefined) { const l = findLoc(d, el.dataset.loc); if (!l) return 'none';
+    if (f === 'coordApprove') l.coordApprove = el.checked;
+    else if (f === 'reqs') l.reqs = val.split('\n').map(x => x.trim()).filter(Boolean);
+    else if (f === 'paperStatement') l.paperwork.statement = val;
+    else if (f === 'paperLink') l.paperwork.links = val ? [{ label: val, url: val }] : [];
+    else l[f] = val;
+    return 'none'; }
+  if (f === 'prefs.summaryOn') { d.prefs.summary = el.checked ? (d.prefs.lastSummary || 'weekly') : 'off'; if (d.activity) logActivity(d, actorName, 'Changed email preference: summary'); toast('Saved.'); return 'render'; }
+  if (f.startsWith('prefs.')) { const k = f.slice(6); d.prefs[k] = el.type === 'checkbox' ? el.checked : (k === 'reminderDays' ? Number(val) : val); if (k === 'summary') d.prefs.lastSummary = val; if (d.activity) logActivity(d, actorName, 'Changed email preference: ' + k); toast('Saved.'); return k === 'renewalReminders' ? 'render' : 'none'; }
+  if (f.startsWith('credential.')) { const i = Number(f.slice(11)); d.credentials = d.credentials || ['MD']; d.credentials[i] = val.trim(); syncName(d); if (d.activity) logActivity(d, actorName, 'Edited credentials'); return 'none'; }
+  d[f] = val; if (['first', 'last', 'suffix', 'display'].includes(f)) syncName(d); if (d.activity && f !== 'bio') logActivity(d, actorName, 'Edited profile'); if (f === 'bio') toast('Bio saved.'); return 'none';
+}
+
+const ui = { tab: 'physician', token: null };
+const NAV = [['physician','To physicians'],['student','To students'],['admin','To admins']];
+const d = doc('marsh'); const oy = doc('oyelaran');
+const b10 = () => DB.bookings.find(b => b.id === 'b10'); const b1 = () => DB.bookings.find(b => b.id === 'b1'); const b4 = () => DB.bookings.find(b => b.id === 'b4'); const b2 = () => DB.bookings.find(b => b.id === 'b2');
+const FOOT = `Keivos Shadowing for ${esc(CFG.org)} · Reply to this email to reach your leadership.`;
+function mail(subject, to, body, cls) { return `<div class="mail ${cls || ''}"><div class="mh"><b>${subject}</b><span>${to}</span></div><div class="mb">${body}</div><div class="mf">${FOOT}</div></div>`; }
+const contact = s => `<dl class="kv"><dt>Student</dt><dd>${esc(s.name)}, ${esc(s.year)}, ${esc(CFG.org)}</dd><dt>Contact</dt><dd>${esc(s.email)} · ${esc(fmtPhone(s.phone))}</dd>${s.bio ? `<dt>About</dt><dd>${esc(s.bio)}</dd>` : ''}</dl>`;
+const schedTo = (d, l) => { const c = locSched(d, l); return c ? esc(c.email) + ' (scheduling coordinator)' : esc(d.email); };
+const btn = (label, kind, id, primary) => `<button class="btn sm ${primary ? 'primary' : ''}" data-action="token" data-kind="${kind}" data-id="${id || ''}">${label}</button>`;
+const ext = (label, msg) => `<button class="btn sm" data-action="toast" data-msg="${esc(msg)}">${label}</button>`;
+
+function physicianMails() {
+  const r = b10(); const rs = stu(r.studentId); const a = b1(); const as = stu(a.studentId); const c = b4(); const cs = stu(c.studentId);
+  return [
+    mail(`${esc(CFG.org)} invites you to offer shadowing through Keivos`, `To: a physician the organization invited`, `<div class="big">${esc(CFG.org)} would like you to host pre-med students.</div><p>${esc(CFG.programDesc)}</p><p>Keivos keeps the schedule and the paperwork reminders; you set when students can come and answer one email after each visit. Your Keivos profile is yours, free, and works with any organization you choose.</p><div class="row">${ext('Connect with ' + CFG.org, 'Opens the invitation page: use an existing profile or create one.')}</div>`),
+    mail('Welcome to Keivos Shadowing', `To: ${esc(d.email)}`, `<div class="big">Your physician profile is ready, Dr. Marsh.</div><p>You're connected to <b>${esc(CFG.org)}</b>; their administrators review new physicians and we'll email you when students can see you. Most things happen from email. The portal is there when you want to change availability, locations or preferences.</p><div class="row">${ext('Open my portal', 'Opens the physician portal, signed in.')}</div>`),
+    mail('Please confirm your shadowing profile', `To: ${esc(d.email)} · sent when office staff set up the profile`, `<div class="big">Teresa Oakes set up a Keivos Shadowing profile for you.</div><p>${esc(CFG.org)} invited your practice to host pre-med students. Teresa entered the practice details and proposed <b>${d.rules.map(ruleText).map(esc).join('; ')}</b> at ${esc(loc(d).name)}. Nothing is visible to students until you confirm.</p><div class="row">${ext('Review and confirm', 'Opens a one-page confirmation: verify your email, review the details, confirm or decline.')}</div><p class="fine">After you confirm, Teresa becomes the scheduling coordinator for this location: she receives its scheduling emails and can manage it from her own coordinator sign-in. Approvals still come to you unless you let her approve requests.</p>`),
+    mail('Teresa Oakes asks to coordinate scheduling for you', `To: ${esc(d.email)} · sent when a coordinator starts setup for a physician who already has an account`, `<div class="big">Teresa Oakes (toakes@uvfm.example) asked to become your scheduling coordinator at Upper Valley Family Medicine.</div><p>Approve and she can manage availability, confirmations, attendance and cancellations for that location from her coordinator sign-in. She cannot change your profile, organizations or email, and approves student requests only if you allow it.</p><div class="row">${ext('Approve', 'Opens a one-page approval: choose the location and whether she may approve requests.')}${ext('Decline', 'Records the decline; Teresa is told only that the request was not approved.')}</div>`),
+    mail('Dr. Marsh invited you to coordinate scheduling on Keivos', `To: toakes@uvfm.example · sent when a physician adds a coordinator to a location`, `<div class="big">Elena Marsh, MD, MPH wants you to manage shadowing scheduling at Upper Valley Family Medicine.</div><p>Create a free Keivos coordinator account, or sign in if you have one, and the location appears in your portal. You'll receive its confirmations, reminders and attendance questions, and you may approve student requests on her behalf.</p><div class="row">${ext('Accept the invitation', 'Opens the coordinator sign-up with the email already filled in.')}</div>`),
+    mail('Your profile is live with ' + CFG.org, `To: ${esc(d.email)}, ${schedTo(d, loc(d))}`, `<div class="big">Students at ${esc(CFG.org)} can now book with Dr. Marsh.</div><p>Your availability: <b>${d.rules.map(ruleText).map(esc).join('; ')}</b> at ${esc(loc(d).name)}.</p><div class="row">${ext('Open my portal', 'Opens the physician portal, signed in.')}</div>`),
+    mail('Your shadowing summary', `To: ${esc(d.email)} · ${summaryText(d.prefs)}, only when there is something to report`, `<dl class="kv"><dt>Upcoming</dt><dd>${live().filter(b => b.doctorId === d.id).map(b => fmt(b.date) + ' · ' + esc(stu(b.studentId).name)).join('<br>') || 'Nothing booked'}</dd><dt>Waiting on you</dt><dd>${live().filter(b => b.doctorId === d.id && b.status === 'requested').length} request to approve · ${DB.bookings.filter(b => b.doctorId === d.id && b.hoursStatus === 'pending').length} attendance question</dd></dl><div class="row">${ext('Open my portal', 'Opens the physician portal, signed in.')}</div><p class="fine">You chose this summary during setup. Turn it off any time from My Profile.</p>`),
+    mail(`Shadowing request · ${esc(rs.name)} · ${fmt(r.date)}`, `To: ${esc(d.email)}${locSched(d, loc(d, r)) && coordsFor(d, loc(d, r)).some(c => authFor(c, d).approve) ? ', ' + esc(locSched(d, loc(d, r)).email) + ' (may approve)' : ''}`, (() => { const s = slotsFor(d).find(x => x.iso === r.date && x.start === r.start) || { cap: 1, confirmed: [], queue: [] }; const waiting = s.queue.filter(b => b.status === 'queued').length; return `<div class="big">${esc(rs.name)} would like to shadow you on ${fmtLong(r.date)}</div><dl class="kv"><dt>Time</dt><dd>${span(r.start, r.end)}</dd><dt>Seat</dt><dd>${s.confirmed.length + 1} of ${s.cap}${waiting ? ' · ' + waiting + ' more student' + (waiting > 1 ? 's' : '') + ' waiting in line' : ''}</dd></dl>${contact(rs)}<p class="fine">${ext('View full profile', 'Opens the student\'s profile: name, year, organization and bio. Nothing leadership tracks is shown.')}</p>${r.status === 'requested' ? `<div class="row">${btn('Approve', 'approve', r.id, true)}${btn('Decline', 'decline', r.id)}</div><p class="fine">This request waits for your answer until the visit starts; it does not expire. Decline sends the next student in line.</p>` : `<div class="notice">${r.status === 'confirmed' ? 'Approved' : 'Declined'}.</div>`}`; })(), r.status === 'requested' ? '' : 'done'),
+    mail(`Your ${fmt('2026-11-12')} visit went unfilled`, `To: ${esc(doc('raman').email)} · sent when a visit starts with requests still waiting`, `<p>Your shadowing visit on ${fmtLong('2026-11-12')}, ${span('08:00', '12:00')}, had 2 seats. No student was approved, and 3 requests were still waiting when the visit began. Those requests have now been declined and the students told.</p><p class="fine">Nothing is held against anyone. If you would rather not approve students by name, turn off "Approve each student" for the organization in My Organizations.</p><div class="row">${ext('Open my portal', 'Opens the physician portal, signed in.')}</div>`),
+    mail(`Shadowing visit confirmed · ${fmt(c.date)}`, `To: ${schedTo(d, loc(d, c))} · calendar invitation attached`, `<div class="big">${esc(cs.name)} is scheduled to shadow Dr. Marsh</div><dl class="kv"><dt>When</dt><dd>${fmtLong(c.date)}, ${span(c.start, c.end)}</dd><dt>Meet at</dt><dd>${esc(loc(d).meet)}</dd></dl>${contact(cs)}<div class="row">${btn('Cancel this visit', 'cancel', c.id)}${ext('Open my profile', 'Opens the physician portal, signed in.')}</div>`),
+    mail(`Reminder · ${esc(cs.name)} in ${daysOut(c.date)} days`, `To: ${schedTo(d, loc(d, c))} · sent ${d.prefs.reminderDays} days before`, `<div class="big">${esc(cs.name)} arrives ${fmtLong(c.date)} at ${t12(c.start)}</div><dl class="kv"><dt>Meet at</dt><dd>${esc(loc(d).meet)}</dd></dl>${contact(cs)}${c.status === 'confirmed' ? `<div class="row">${btn('Cancel this visit', 'cancel', c.id)}${ext('Open my profile', 'Opens the physician portal, signed in.')}</div>` : '<div class="notice">This visit was cancelled.</div>'}`, c.status === 'confirmed' ? '' : 'done'),
+    mail(`Did ${esc(as.name)} attend on ${fmt(a.date)}?`, `To: ${attendanceDelegated(d) && locSched(d, loc(d, a)) ? esc(locSched(d, loc(d, a)).email) + ' (coordinator, per Dr. Marsh\'s preference)' : esc(d.email)} · sent when the student logged hours`, `<div class="big">${esc(as.name)} logged ${a.hours ? a.hours.toFixed(1) : '0.0'} hours with you on ${fmtLong(a.date)}.</div>${a.hoursStatus === 'pending' ? `<div class="row">${btn('Yes, attended', 'attend_yes', a.id, true)}${btn('No, did not attend', 'attend_no', a.id)}</div>` : a.status === 'noshow' ? '<div class="notice bad">Recorded as a no-show.</div>' : '<div class="notice good">Attendance confirmed. Thank you.</div>'}`, a.hoursStatus === 'pending' ? '' : 'done'),
+    mail(`Reminder · did ${esc(as.name)} attend on ${fmt(a.date)}?`, `To: ${attendanceDelegated(d) && locSched(d, loc(d, a)) ? esc(locSched(d, loc(d, a)).email) : esc(d.email)} · sent 7 days after the first ask`, `<p>We have not heard back about ${esc(as.name)}'s visit on ${fmtLong(a.date)}. One click records the answer.</p>${a.hoursStatus === 'pending' ? `<div class="row">${btn('Yes, attended', 'attend_yes', a.id, true)}${btn('No, did not attend', 'attend_no', a.id)}</div>` : '<div class="notice">Answered.</div>'}`, a.hoursStatus === 'pending' ? '' : 'done'),
+    mail(`${esc(CFG.org)} is preparing for ${esc(nextTerm().name)}`, `To: ${esc(d.email)} · sent 3 weeks before the term`, `<p>Your current schedule: <b>${d.rules.map(ruleText).map(esc).join('; ')}</b>.</p>${d.renewed === 'Winter 2027' ? '<div class="notice good">Confirmed for Winter 2027.</div>' : `<div class="row">${btn('Same schedule', 'renew', '', true)}${ext('Change or pause', 'Opens the physician portal, signed in.')}</div><p class="fine">No reply by ${fmtY(nextTerm().start)} pauses your availability for ${esc(CFG.org)} until we hear from you.</p>`}`, d.renewed === 'Winter 2027' ? 'done' : '')
+  ];
+}
+function studentMails() {
+  const s = stu('avery'); const v = b2(); const vd = doc(v.doctorId);
+  return [
+    mail('Your Keivos Shadowing code', `To: ${esc(s.email)}`, `<div class="big">Your code is <span class="mono" style="font-size:22px;letter-spacing:.12em">482 913</span></div><p>Enter it in the app to verify your email or sign in. It expires in 15 minutes. If you didn't request it, ignore this email.</p>`),
+    mail(`Confirmed · shadowing with ${esc(vd.name)} · ${fmt(v.date)}`, `To: ${esc(s.email)} · calendar invitation attached`, `<div class="big">You're confirmed for ${fmtLong(v.date)}, ${span(v.start, v.end)}</div><dl class="kv"><dt>Where</dt><dd>${esc(loc(vd).name)}<br>${esc(fullAddress(loc(vd)))}</dd><dt>Go to</dt><dd>${esc(loc(vd).meet)}</dd><dt>Parking</dt><dd>${esc(loc(vd).parking)}</dd><dt>Day-of contact</dt><dd>${esc(loc(vd).dayof)}</dd><dt>Before you come</dt><dd>${loc(vd).reqs.map(esc).join('<br>')}</dd><dt>Cancel by</dt><dd>${cancelBy(v, CFG.cancelHours)}. After that it counts as a no-show.</dd></dl>${loc(vd).paperwork.mode !== 'none' ? `<div class="notice warn">${esc(loc(vd).paperwork.statement)}</div>` : ''}<div class="row">${btn('Cancel this visit', 'cancel_student', v.id)}${ext('Open My shadowing', 'Opens the student app.')}</div>`),
+    mail(`Request sent · ${esc(d.name)} · ${fmt('2026-12-08')}`, `To: ${esc(s.email)}`, `<p>Your request to shadow ${esc(d.name)} on ${fmtLong('2026-12-08')} has been sent. You are <b>#3 in line</b>; ${esc(first(d.name))} approves each request in order, and we'll notify you when they respond. Your place stays even if the physician's minimum notice passes.</p>`),
+    mail(`Not approved · ${esc(d.name)} · ${fmt('2026-12-08')}`, `To: ${esc(s.email)}`, `<p>${esc(d.name)} did not approve your request for ${fmtLong('2026-12-08')}. That date can't be requested again, and you can request any other open date with ${esc(first(d.name))} or another physician.</p><div class="row">${ext('Find a physician', 'Opens the student app.')}</div>`),
+    mail(`Your request for ${fmt('2026-11-12')} was not answered in time`, `To: ${esc(s.email)} · sent when the visit starts with the request still waiting`, `<p>The ${fmtLong('2026-11-12')} visit with ${esc(doc('raman').name)} started before the physician answered the requests in line, so yours was closed. Nothing is held against you.</p><div class="row">${ext('Find a physician', 'Opens the student app.')}</div>`),
+    mail(`Reminder · ${esc(vd.name)} ${daysOut(v.date) === 1 ? 'tomorrow' : 'in ' + daysOut(v.date) + ' days'}`, `To: ${esc(s.email)} · sent ${CFG.cancelHours} hours before`, `<div class="big">${fmtLong(v.date)}, ${span(v.start, v.end)} with ${esc(vd.name)}</div><p>Arrive 15 minutes early at ${esc(loc(vd).meet)}. Day-of contact: ${esc(loc(vd).dayof)}.</p><p class="fine">This is the last moment to cancel without a no-show.</p><div class="row">${btn('Cancel this visit', 'cancel_student', v.id)}</div>`),
+    mail(`How did it go with ${esc(d.name)}?`, `To: ${esc(s.email)} · sent the morning after the visit`, `<div class="big">Log your hours from ${fmtLong(b1().date)}</div><p>Enter your hours and, if you like, a short reflection. ${esc(first(d.name))} will be asked to confirm you attended, and the hours count once they do.</p><div class="row">${ext('Log hours and reflection', 'Opens My shadowing with the log form for this visit.')}</div>`),
+    mail(`Still need your hours from ${fmt(b1().date)}`, `To: ${esc(s.email)} · sent 3 days later if nothing was logged`, `<p>Your visit with ${esc(d.name)} isn't logged yet. It takes a minute.</p><div class="row">${ext('Log hours', 'Opens My shadowing.')}</div>`),
+    mail(`Hours confirmed · ${fmt(b1().date)}`, `To: ${esc(s.email)}`, `<div class="big">${esc(d.name)} confirmed your ${b1().hours ? b1().hours.toFixed(1) : '4.0'} hours</div><p>They now count toward your total.</p>`),
+    mail(`About your visit on ${fmt(b1().date)}`, `To: ${esc(s.email)}`, `<p>${esc(d.name)} reported that you did not attend on ${fmtLong(b1().date)}. Your booking access is paused. Contact your leadership to talk about reinstatement.</p>`),
+    mail(`Your visit on ${fmt(v.date)} was cancelled`, `To: ${esc(s.email)}`, `<p>${esc(vd.name)} had to cancel ${fmtLong(v.date)}. You'll be shown first for their next open date.</p><div class="row">${ext('Pick a new date', 'Opens the student app.')}</div>`),
+    mail('A date opened with Dr. Ahn', `To: ${esc(s.email)} · sent to everyone on the waitlist`, `<div class="big">${esc(doc('ahn').name)} has an open date</div><p>${fmtLong('2026-12-12')}, 9:00 AM – 1:00 PM. The first student to book gets it.</p><div class="row">${ext('Book it', 'Opens the physician\'s dates in the student app.')}</div>`),
+    mail('Is your profile still right?', `To: ${esc(s.email)} · sent when each term closes`, `<div class="big">A new term is starting</div><p>We have you as a <b>${esc(s.year)}</b> graduating <b>${esc(fmtMonth(s.gradTerm))}</b>. If that has changed, update it so your access and records stay right.</p><div class="row">${ext('Confirm', 'Records the confirmation.')}${ext('Update my profile', 'Opens the Account tab in the student app.')}</div>`),
+    mail('Your request for extra visits', `To: ${esc(s.email)}`, `<p>Your leadership granted you <b>1 extra visit</b> for November. You can book it now.</p><div class="row">${ext('Find a physician', 'Opens the student app.')}</div>`),
+    mail('We received your access request', `To: ${esc(s.email)}`, `<p>Your request for shadowing access reached your leadership on ${fmtLong(TODAY_ISO)}. They review requests and we'll notify you when they respond. You can sign in any time to check.</p>`),
+    mail('Your shadowing access is approved', `To: ${esc(s.email)}`, `<div class="big">You're cleared to shadow</div><p>${esc(CFG.sponsor)} approved your access on ${fmtLong(TODAY_ISO)}. It runs through ${fmtY(CFG.codeExpires)}.</p>${CFG.welcome ? `<p>${esc(CFG.welcome)}</p>` : ''}<div class="row">${ext('Find a physician', 'Opens the student app.')}</div>`),
+    mail('Your access request was not approved', `To: ${esc(s.email)}`, `<p>Your leadership did not approve your request for shadowing access. If you think this is a mistake, or once you have completed the prerequisites, reply to this email or ask again from the app.</p>`),
+    mail(`Your shadowing access ends ${fmtY(CFG.codeExpires)}`, `To: ${esc(s.email)} · sent two weeks before access expires`, `<p>Your access is confirmed each term. ${esc(nextTerm() ? nextTerm().name : 'Next term')} needs a new activation code from your leadership; enter it in the app once you have it. Visits already booked are not affected.</p><div class="row">${ext('Enter the new code', 'Opens the activation step.')}</div>`),
+    mail('Late cancellation recorded', `To: ${esc(s.email)}`, `<p>You cancelled your visit with ${esc(doc('oyelaran').name)} on ${fmtLong('2026-11-12')} inside the ${CFG.cancelHours}-hour window, so it counts as a no-show and your booking access is paused. Email your leadership at ${esc(CFG.contactEmail)}; they can reinstate you right away.</p>`),
+  ];
+}
+function adminMails() {
+  const to = `To: ${CFG.allowlist.map(a => esc(a.email)).join(', ')}`;
+  return [
+    mail(`Shadowing digest · week of ${fmt('2026-10-19')}`, `To: ${CFG.allowlist.filter(a => a.digest !== 'None').map(a => esc(a.email)).join(', ')} · each admin picks their own day`, `<dl class="kv"><dt>New activations</dt><dd>3</dd><dt>Pending intakes</dt><dd>1 · ${esc(doc('whitfield').name)}</dd><dt>Attendance unanswered</dt><dd>2, one over 7 days</dd><dt>Cap requests</dt><dd>1 · ${esc(stu('maya').name)}</dd><dt>No-shows</dt><dd>0 this week</dd><dt>Bounced emails</dt><dd>0</dd><dt>Visits this week</dt><dd>3 · 13.0 hours</dd></dl><div class="row">${ext('Open admin', 'Opens the admin dashboard.')}</div>`),
+    mail(`New physician · ${esc(doc('whitfield').name)}`, to, `<p>${esc(doc('whitfield').name)}, ${esc(doc('whitfield').specialty)} at ${esc(loc(doc('whitfield')).name)}, connected a profile tom. ${esc(docRuleSummary(doc('whitfield')))}.</p><div class="row">${ext('Review and approve', 'Opens the physician\'s profile in admin.')}</div>`),
+    mail(`Cap request · ${esc(stu('maya').name)}`, to, `<p>${esc(stu('maya').name)} asks for more visits in November (2 of 2 booked): "${esc(DB.capRequests[0].note)}"</p><div class="row">${ext('Grant or deny', 'Opens the action item in admin.')}</div>`),
+    mail(`No-show recorded · ${esc(stu('ethan').name)}`, to, `<p>${esc(doc('raman').name)} reported that ${esc(stu('ethan').name)} did not attend on ${fmtLong('2026-10-03')}. The student's booking is paused until an admin reinstates them.</p><dl class="kv"><dt>Student</dt><dd>${esc(stu('ethan').email)} · ${esc(stu('ethan').phone)}</dd><dt>Physician</dt><dd>${esc(loc(doc('raman')).dayof)}</dd></dl>`),
+    mail(`Attendance unanswered 14 days · ${esc(doc('raman').name)}`, to, `<p>${esc(doc('raman').name)} has not answered whether ${esc(stu('noah').name)} attended on ${fmtLong('2026-10-17')}. Two reminders were sent. Office contact: ${esc(loc(doc('raman')).dayof)}.</p>`),
+    mail(`A physician blocked a student`, to, `<p>${esc(doc('raman').name)} chose not to be shown to ${esc(stu('ethan').name)} (${fmtY('2026-10-04')}). The student has not been told. Note: none.</p>`),
+    mail(`Access request · ${esc(stu('sofia').name)}`, `To: administrators with the Students permission`, `<p>${esc(stu('sofia').name)}, ${esc(stu('sofia').year)}, asked for shadowing access on ${fmtLong(stu('sofia').elig.requestedOn)}: "${esc(stu('sofia').elig.note)}"</p><div class="row">${ext('Approve', 'Opens the Overview with this request.')}${ext('Deny', 'Opens the Overview with this request.')}</div>`),
+    mail(`Late cancellation · ${esc(stu('avery').name)}`, `To: administrators with the Students permission`, `<p>${esc(stu('avery').name)} cancelled a visit with ${esc(doc('oyelaran').name)} on ${fmtLong('2026-11-12')} inside the ${CFG.cancelHours}-hour window. Their booking access is paused. Note from the student: "Car broke down on the way to Idaho Falls."</p><div class="row">${ext('Reinstate', 'Opens the Students tab.')}</div>`),
+    mail(`You've been invited to administer ${esc(CFG.org)}`, `To: vp.premed@byui.edu`, `<p>${esc(CFG.sponsor)} invited you as an administrator with the Students permission. Sign in with this address to accept.</p><div class="row">${ext('Accept invitation', 'Opens the admin sign-in.')}</div>`),
+    mail('Your administrator permissions changed', `To: shadowing@byui.edu · copied to lead administrators`, `<p>${esc(CFG.sponsor)} changed your permissions for ${esc(CFG.org)}. You now have: Physicians, Bookings, Analytics.</p>`),
+    mail('Dr. Elena Marsh offers shadowing through Keivos', `To: an organization contact the physician named`, `<p>Dr. Elena Marsh, Family Medicine at Upper Valley Family Medicine in Rexburg, hosts pre-med students through Keivos Shadowing and would like to connect with your organization. Keivos keeps the schedule, paperwork reminders and attendance records; your students book from the physician's open dates.</p><div class="row">${ext('See how it works', 'Opens the organization sign-up.')}</div><p class="fine">Nothing about Dr. Marsh's availability is shared until your organization joins and she approves the connection.</p>`),
+    mail('Payment failed for your Keivos Shadowing subscription', `To: billing contact and lead administrators`, `<p>The ${esc(CFG.org)} subscription payment could not be processed. Please update the payment method within 14 days to keep the program running. Confirmed visits are not affected.</p><div class="row">${ext('Update payment method', 'Opens billing.')}</div>`),
+  ];
+}
+function vToken() {
+  const t = ui.token; const b = t.id ? DB.bookings.find(x => x.id === t.id) : null; const s = b ? stu(b.studentId) : null;
+  const back = `<div class="row"><button class="btn" data-action="tokenBack">Back to emails</button></div>`;
+  if (t.done) return `<section class="card stack confirm"><h2>${esc(t.done)}</h2><p class="fine">${esc(t.detail || '')}</p>${back}</section>`;
+  const T = {
+    approve: ['Approve this request?', `${s ? esc(s.name) : ''} will be confirmed for ${b ? fmtLong(b.date) + ', ' + span(b.start, b.end) : ''}. They and your scheduling contact get a confirmation.`, 'Approve'],
+    decline: ['Decline this request?', `${s ? esc(s.name) : ''} will be told the date is unavailable and can pick another.`, 'Decline'],
+    attend_yes: ['Confirm attendance?', `${s ? esc(s.name) : ''} · ${b ? fmtLong(b.date) : ''} · ${b && b.hours != null ? b.hours.toFixed(1) : ''} hours. The hours will count for the student.`, 'Yes, attended'],
+    attend_no: ['Record a no-show?', `${s ? esc(s.name) : ''} · ${b ? fmtLong(b.date) : ''}. The student's booking access is paused and leadership is notified.`, 'No, did not attend'],
+    cancel: ['Cancel this visit?', `${s ? esc(s.name) : ''} · ${b ? fmtLong(b.date) : ''}. The student is notified and gets first pick of your next open date. No penalty to you.`, 'Cancel the visit'],
+    cancel_student: ['Cancel this visit?', `${b ? esc(doc(b.doctorId).name) + ' · ' + fmtLong(b.date) : ''}. ${b && daysOut(b.date) * 24 >= CFG.cancelHours ? 'You are outside the ' + CFG.cancelHours + '-hour window, so there is no penalty.' : 'You are inside the ' + CFG.cancelHours + '-hour window; this will count as a no-show.'}`, 'Cancel the visit'],
+    renew: ['Keep the same schedule for Winter 2027?', d.rules.map(ruleText).join('; '), 'Same schedule']
+  }[t.kind];
+  const who = t.kind === 'cancel_student' ? esc(stu('avery').name) : esc(d.name) + ' · ' + esc(loc(d).name);
+  return `<section class="card stack confirm"><div class="fine">${who}</div><h2>${T[0]}</h2><p>${T[1]}</p>
+    ${t.kind === 'attend_no' ? `<label class="opt"><input type="checkbox" data-action="blockToggle" ${t.block ? 'checked' : ''}> Don't match me with this student again. ${info(TIPS.block)}</label>` : ''}
+    <div class="row"><button class="btn primary" data-action="tokenConfirm">${T[2]}</button><button class="btn" data-action="tokenBack">Never mind</button></div>
+    <p class="fine">This link works once. If you have already answered, this page shows your answer instead.</p></section>`;
+}
+function render() {
+  document.getElementById('subnav').innerHTML = NAV.map(([k, l]) => `<button data-view="${k}" class="${k === ui.tab ? 'on' : ''}">${l}</button>`).join('');
+  const cards = ui.tab === 'physician' ? physicianMails() : ui.tab === 'student' ? studentMails() : adminMails();
+  document.getElementById('app').innerHTML = ui.token ? vToken() : `<div class="grid">${cards.join('')}</div>`;
+}
+document.getElementById('subnav').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; ui.tab = b.dataset.view; ui.token = null; render(); });
+document.getElementById('app').addEventListener('click', e => {
+  const el = e.target.closest('[data-action]'); if (!el) return;
+  if (el.tagName === 'INPUT') return;
+  const a = el.dataset.action;
+  if (a === 'toast') { toast(el.dataset.msg); return; }
+  if (a === 'token') { ui.token = { kind: el.dataset.kind, id: el.dataset.id || null, block: false }; render(); return; }
+  if (a === 'tokenBack') { ui.token = null; render(); return; }
+  if (a === 'tokenConfirm') {
+    const t = ui.token; const b = t.id ? DB.bookings.find(x => x.id === t.id) : null; const s = b ? stu(b.studentId) : null; const who = first(d.name);
+    if (t.kind === 'approve') { const sl = slotsFor(doc(b.doctorId)).find(x => x.iso === b.date && x.start === b.start); b.status = 'confirmed'; b.seat = sl ? sl.confirmed.length + 1 : 1; logActivity(d, who, 'Approved ' + s.name); const p = promoteQueue(doc(b.doctorId), b.date, b.start); ui.token = { done: 'Approved', detail: s.name + ' is confirmed for ' + fmtLong(b.date) + '. Confirmation sent.' + (p ? ' The next request in line, from ' + stu(p.studentId).name + ', is on its way to you.' : '') }; }
+    else if (t.kind === 'decline') { b.status = 'declined'; logActivity(d, who, 'Declined request from ' + s.name); const p = promoteQueue(doc(b.doctorId), b.date, b.start); ui.token = { done: 'Declined', detail: s.name + ' has been told and can pick another date.' + (p ? ' The next request in line, from ' + stu(p.studentId).name + ', is on its way to you.' : '') }; }
+    else if (t.kind === 'attend_yes') { b.hoursStatus = 'confirmed'; ui.token = { done: 'Attendance confirmed', detail: (b.hours || 0).toFixed(1) + ' hours now count for ' + s.name + '.' }; }
+    else if (t.kind === 'attend_no') { b.status = 'noshow'; b.hoursStatus = 'none'; s.strikes++; s.blockedAt = TODAY_ISO; if (t.block && !d.blocks.includes(s.id)) d.blocks.push(s.id); ui.token = { done: 'No-show recorded', detail: (t.block ? s.name + ' will not see your profile again. ' : '') + 'Leadership has been notified.' }; }
+    else if (t.kind === 'cancel') { cancelBooking(b, 'physician'); ui.token = { done: 'Visit cancelled', detail: s.name + ' has been notified. The date is open again.' }; }
+    else if (t.kind === 'cancel_student') { cancelBooking(b, 'student'); ui.token = { done: 'Visit cancelled', detail: doc(b.doctorId).name + ' has been notified.' }; }
+    else if (t.kind === 'renew') { d.renewed = 'Winter 2027'; ui.token = { done: 'Schedule confirmed', detail: 'Your Winter 2027 dates are open to students.' }; }
+    render();
+  }
+});
+document.getElementById('app').addEventListener('change', e => { if (e.target.dataset.action === 'blockToggle') ui.token.block = e.target.checked; });
+render();
+</script>
+
+</body></html>
